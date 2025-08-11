@@ -1,0 +1,1332 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Comcin API",
+        "description": "API documentation for the Coalition of Micro-lending and Cooperative Institutions in Nigeria (Comcin)",
+        "contact": {
+            "email": "support@comcin.ng"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "operationId": "72da9856cfaf0c9d012815b263d9f6eb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/v1/forgot-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Request password reset",
+                "operationId": "84c781babcdb94781e3cc26797a079f5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@comcin.ng"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP sent if user exists"
+                    }
+                }
+            }
+        },
+        "/api/v1/verify-otp": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify OTP",
+                "operationId": "33ea3c539acf86558fdb6005efba8c3e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "otp"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@comcin.ng"
+                                    },
+                                    "otp": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP verified"
+                    },
+                    "400": {
+                        "description": "Invalid OTP"
+                    }
+                }
+            }
+        },
+        "/api/v1/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset password using OTP",
+                "operationId": "bbf805f1862facb2ca5349b5a0453457",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "otp",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@comcin.ng"
+                                    },
+                                    "otp": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "newpassword"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "newpassword"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successful"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                }
+            }
+        },
+        "/api/v1/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new institution and create a user account",
+                "description": "Creates a user and institution record with uploaded files in a single transaction.",
+                "operationId": "3ab1ff58e6d30faee19a7b6405b8a694",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "full_name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "institution_name",
+                                    "institution_type",
+                                    "date_of_establishment",
+                                    "registration_number",
+                                    "regulatory_body",
+                                    "operating_state",
+                                    "designation",
+                                    "official_email",
+                                    "phone_number",
+                                    "id_card",
+                                    "certificate_of_registration",
+                                    "operational_license",
+                                    "constitution",
+                                    "membership_agreement",
+                                    "terms_agreement"
+                                ],
+                                "properties": {
+                                    "full_name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "institution_name": {
+                                        "type": "string",
+                                        "example": "ABC Microfinance"
+                                    },
+                                    "institution_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Microfinance",
+                                            "Cooperative",
+                                            "Other"
+                                        ],
+                                        "example": "Microfinance"
+                                    },
+                                    "category_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "unit",
+                                            "state",
+                                            "federal"
+                                        ],
+                                        "example": "state"
+                                    },
+                                    "date_of_establishment": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2020-05-15"
+                                    },
+                                    "registration_number": {
+                                        "type": "string",
+                                        "example": "REG-123456"
+                                    },
+                                    "regulatory_body": {
+                                        "type": "string",
+                                        "example": "Central Bank"
+                                    },
+                                    "operating_state": {
+                                        "type": "string",
+                                        "example": "Lagos"
+                                    },
+                                    "head_office": {
+                                        "type": "string",
+                                        "example": "123 Main Street, Lagos"
+                                    },
+                                    "business_operation_address": {
+                                        "type": "string",
+                                        "example": "45 Business Rd, Abuja"
+                                    },
+                                    "website_url": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://www.example.com"
+                                    },
+                                    "descriptions": {
+                                        "type": "string",
+                                        "example": "A cooperative offering microfinance services."
+                                    },
+                                    "designation": {
+                                        "type": "string",
+                                        "example": "CEO"
+                                    },
+                                    "official_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ceo@abc.com"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "+2348012345678"
+                                    },
+                                    "id_card": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "certificate_of_registration": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "operational_license": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "constitution": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "latest_annual_report": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "letter_of_intent": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "board_resolution": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "passport_photograph": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "other_supporting_document": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "membership_agreement": {
+                                        "type": "boolean",
+                                        "example": 1
+                                    },
+                                    "terms_agreement": {
+                                        "type": "boolean",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User and Institution created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User and Institution created successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation failed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "An unexpected error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/verify-email": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify user email",
+                "operationId": "9d2135286a99603bb399ce12d2014f18",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "verification_code"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "admin@email.com"
+                                    },
+                                    "verification_code": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email verified successfully"
+                    },
+                    "400": {
+                        "description": "Invalid verification code"
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "operationId": "123b6a1d11c0b146b02d569fe51da5a8",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin dashboard data",
+                "operationId": "getDashboardData",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/memberships": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin membership data",
+                "operationId": "getMembershipData",
+                "responses": {
+                    "200": {
+                        "description": "Membership data retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/institutions": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin institution data",
+                "operationId": "getInstitutionData",
+                "responses": {
+                    "200": {
+                        "description": "Institution data retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/applications/{user_id}": {
+            "get": {
+                "tags": [
+                    "Admin - Applications"
+                ],
+                "summary": "Get single pending application",
+                "operationId": "29375ee62cebad58dc6ade9add1dc256",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of the user/institution to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Application retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "application": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/applications/{user_id}/action": {
+            "post": {
+                "tags": [
+                    "Admin - Applications"
+                ],
+                "summary": "Approve or Reject Institution Application",
+                "operationId": "fdf00ae2b8f87fd371e78ef090ce76c8",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of the user/institution to act on",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "type": "string",
+                                        "enum": [
+                                            "approve",
+                                            "reject"
+                                        ],
+                                        "example": "approve"
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "rejection_reason": {
+                                        "type": "string",
+                                        "example": "Incomplete documentation"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Application status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Application approved successfully."
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/notifications/{user_id}": {
+            "get": {
+                "tags": [
+                    "Admin - Notifications"
+                ],
+                "summary": "Get notifications for a user",
+                "operationId": "getNotifications",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of the user to retrieve notifications for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notifications retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/payment-methods": {
+            "get": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Get all payment methods",
+                "operationId": "4d77b700846bf529a23f56b708c75417",
+                "responses": {
+                    "200": {
+                        "description": "List of payment methods"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/payment-methods/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Get a single payment method",
+                "operationId": "c95783a7492c2b0ad23c006a3f015b4f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single payment method"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Update a payment method",
+                "operationId": "73f117b8ef79e6c004b925a864c78dbc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "mode"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "logo": {
+                                        "type": "file"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "test",
+                                            "live"
+                                        ]
+                                    },
+                                    "test_public_key": {
+                                        "type": "string"
+                                    },
+                                    "test_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "live_public_key": {
+                                        "type": "string"
+                                    },
+                                    "live_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "account_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment method updated successfully"
+                    },
+                    "404": {
+                        "description": "Payment method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Delete a payment method",
+                "operationId": "13ae293c7f73cee9c69225c11d94aed5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Payment method deleted"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-methods": {
+            "post": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Create a new payment method",
+                "operationId": "08bca25d554e94957a6a3b26b57eed26",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "logo",
+                                    "mode",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "logo": {
+                                        "type": "file"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "test",
+                                            "live"
+                                        ]
+                                    },
+                                    "test_public_key": {
+                                        "type": "string"
+                                    },
+                                    "test_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "live_public_key": {
+                                        "type": "string"
+                                    },
+                                    "live_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "account_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "default": "NGN"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment method created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "payment_method": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Institution": {
+                "required": [
+                    "institution_name",
+                    "institution_type",
+                    "registration_number"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "institution_name": {
+                        "type": "string",
+                        "example": "ABC Microfinance"
+                    },
+                    "institution_type": {
+                        "type": "string",
+                        "enum": [
+                            "Microfinance",
+                            "Cooperative",
+                            "Other"
+                        ],
+                        "example": "Microfinance"
+                    },
+                    "category_type": {
+                        "type": "string",
+                        "enum": [
+                            "Unit",
+                            "State",
+                            "Federal"
+                        ],
+                        "example": "Unit"
+                    },
+                    "date_of_establishment": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2020-05-15"
+                    },
+                    "registration_number": {
+                        "type": "string",
+                        "example": "REG-123456"
+                    },
+                    "regulatory_body": {
+                        "type": "string",
+                        "example": "Central Bank"
+                    },
+                    "operating_state": {
+                        "type": "string",
+                        "example": "Lagos"
+                    },
+                    "head_office": {
+                        "type": "string",
+                        "example": "123 Main Street, Lagos"
+                    },
+                    "business_operation_address": {
+                        "type": "string",
+                        "example": "45 Business Rd, Abuja"
+                    },
+                    "website_url": {
+                        "type": "string",
+                        "format": "url",
+                        "example": "https://www.example.com"
+                    },
+                    "descriptions": {
+                        "type": "string",
+                        "example": "A cooperative offering microfinance services."
+                    },
+                    "institution_logo": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/logo.png"
+                    },
+                    "certificate_of_registration": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/certificate.pdf"
+                    },
+                    "operational_license": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/license.pdf"
+                    },
+                    "constitution": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/constitution.pdf"
+                    },
+                    "latest_annual_report": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/annual_report.pdf"
+                    },
+                    "letter_of_intent": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/letter_of_intent.pdf"
+                    },
+                    "board_resolution": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/board_resolution.pdf"
+                    },
+                    "passport_photograph": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/passport.jpg"
+                    },
+                    "other_supporting_document": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/supporting_doc.pdf"
+                    },
+                    "membership_agreement": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "terms_agreement": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_approved": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "rejection_reason": {
+                        "type": "string",
+                        "example": "Incomplete documents",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Notification": {
+                "title": "Notification",
+                "description": "Notification model for storing messages sent to users",
+                "required": [
+                    "user_id",
+                    "title",
+                    "type",
+                    "category",
+                    "reference",
+                    "content",
+                    "created_by"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "description": "ID of the user the notification belongs to",
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "created_by": {
+                        "description": "Admin or officer who created the notification",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "description": "Short title of the notification",
+                        "type": "string",
+                        "example": "Payment Confirmation"
+                    },
+                    "type": {
+                        "description": "Type of notification",
+                        "type": "string",
+                        "enum": [
+                            "info",
+                            "warning",
+                            "error"
+                        ],
+                        "example": "info"
+                    },
+                    "category": {
+                        "description": "Category of notification",
+                        "type": "string",
+                        "enum": [
+                            "system",
+                            "user",
+                            "transaction",
+                            "application"
+                        ],
+                        "example": "transaction"
+                    },
+                    "reference": {
+                        "description": "Unique reference for the notification",
+                        "type": "string",
+                        "example": "NOTIF-20250807-XYZ123"
+                    },
+                    "read_at": {
+                        "description": "Timestamp when the notification was read",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-07T14:30:00Z",
+                        "nullable": true
+                    },
+                    "content": {
+                        "description": "Detailed message body of the notification",
+                        "type": "string",
+                        "example": "Your payment has been confirmed. Thank you."
+                    },
+                    "view_status": {
+                        "description": "View status of the notification. 0 = Not viewed, 1 = Viewed",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "example": "2025-08-07T13:00:00Z",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "example": "2025-08-07T13:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PaymentMethod": {
+                "title": "PaymentMethod",
+                "required": [
+                    "name",
+                    "slug",
+                    "mode"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Paystack"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "example": "paystack"
+                    },
+                    "logo": {
+                        "type": "string",
+                        "example": "uploads/payment_methods/paystack.png",
+                        "nullable": true
+                    },
+                    "mode": {
+                        "type": "string",
+                        "enum": [
+                            "test",
+                            "live"
+                        ],
+                        "example": "test"
+                    },
+                    "test_public_key": {
+                        "type": "string",
+                        "example": "pk_test_1234567890"
+                    },
+                    "test_secret_key": {
+                        "type": "string",
+                        "example": "sk_test_1234567890"
+                    },
+                    "live_public_key": {
+                        "type": "string",
+                        "example": "pk_live_1234567890"
+                    },
+                    "live_secret_key": {
+                        "type": "string",
+                        "example": "sk_live_1234567890"
+                    },
+                    "account_name": {
+                        "type": "string",
+                        "example": "Comcin Ltd",
+                        "nullable": true
+                    },
+                    "account_number": {
+                        "type": "string",
+                        "example": "1234567890",
+                        "nullable": true
+                    },
+                    "bank_name": {
+                        "type": "string",
+                        "example": "First Bank",
+                        "nullable": true
+                    },
+                    "currency": {
+                        "type": "string",
+                        "example": "NGN"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "role"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_uid": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "role": {
+                        "type": "string",
+                        "example": "member"
+                    },
+                    "avatar": {
+                        "type": "string",
+                        "example": "uploads/avatars/uuid/avatar.png"
+                    },
+                    "phone_number": {
+                        "type": "string",
+                        "example": "+2348012345678"
+                    },
+                    "designation": {
+                        "type": "string",
+                        "example": "Manager"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_verified": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter token in format **Bearer &lt;token&gt;**",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Authentication related endpoints"
+        },
+        {
+            "name": "Admin Dashboard",
+            "description": "Admin Dashboard operations"
+        },
+        {
+            "name": "Admin - Applications",
+            "description": "Admin - Applications"
+        },
+        {
+            "name": "Admin - Notifications",
+            "description": "Admin - Notifications"
+        },
+        {
+            "name": "Admin - Payment Method",
+            "description": "Admin - Payment Method"
+        }
+    ]
+}
