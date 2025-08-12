@@ -19,7 +19,7 @@ Route::prefix('v1')->group(function () {
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
-    Route::post('verify-email', [AuthController::class, 'verifyEmail']);
+    Route::get('verify-email/{uuid}/{otp}', [AuthController::class, 'verifyEmail']);
 
 
 

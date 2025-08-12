@@ -9,6 +9,470 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin dashboard data",
+                "operationId": "getDashboardData",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/memberships": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin membership data",
+                "operationId": "getMembershipData",
+                "responses": {
+                    "200": {
+                        "description": "Membership data retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/institutions": {
+            "get": {
+                "tags": [
+                    "Admin Dashboard"
+                ],
+                "summary": "Get admin institution data",
+                "operationId": "getInstitutionData",
+                "responses": {
+                    "200": {
+                        "description": "Institution data retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/applications/{user_id}": {
+            "get": {
+                "tags": [
+                    "Admin - Applications"
+                ],
+                "summary": "Get single pending application",
+                "operationId": "c50580bec7e9d4e2b015be16e605cb7a",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of the user/institution to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Application retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "application": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/applications/{user_id}/action": {
+            "post": {
+                "tags": [
+                    "Admin - Applications"
+                ],
+                "summary": "Approve or Reject Institution Application",
+                "operationId": "26b00020c6f64922da6ac1a6f4dd0536",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of the user/institution to act on",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "type": "string",
+                                        "enum": [
+                                            "approve",
+                                            "reject"
+                                        ],
+                                        "example": "approve"
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "rejection_reason": {
+                                        "type": "string",
+                                        "example": "Incomplete documentation"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Application status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Application approved successfully."
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/notifications/{user_id}": {
+            "get": {
+                "tags": [
+                    "Admin - Notifications"
+                ],
+                "summary": "Get notifications for a user",
+                "operationId": "getNotifications",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of the user to retrieve notifications for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notifications retrieved successfully"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/payment-methods": {
+            "get": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Get all payment methods",
+                "operationId": "b461ce745ca6e26c3166fc608dd90afa",
+                "responses": {
+                    "200": {
+                        "description": "List of payment methods"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/payment-methods/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Get a single payment method",
+                "operationId": "eabf0476ed9db8374e9ee5acec6e812d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single payment method"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Update a payment method",
+                "operationId": "241668ebecfe0d98d4c83e579d25d092",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "mode"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "logo": {
+                                        "type": "file"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "test",
+                                            "live"
+                                        ]
+                                    },
+                                    "test_public_key": {
+                                        "type": "string"
+                                    },
+                                    "test_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "live_public_key": {
+                                        "type": "string"
+                                    },
+                                    "live_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "account_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment method updated successfully"
+                    },
+                    "404": {
+                        "description": "Payment method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Delete a payment method",
+                "operationId": "2637e400b41976b22cc4c395d5275b23",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Payment method deleted"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment-methods": {
+            "post": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Create a new payment method",
+                "operationId": "14407818574df6d5f25da48d5f8806b4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "logo",
+                                    "mode",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "logo": {
+                                        "type": "file"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "test",
+                                            "live"
+                                        ]
+                                    },
+                                    "test_public_key": {
+                                        "type": "string"
+                                    },
+                                    "test_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "live_public_key": {
+                                        "type": "string"
+                                    },
+                                    "live_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "account_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "default": "NGN"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment method created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "payment_method": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "tags": [
@@ -337,11 +801,11 @@
                                     },
                                     "membership_agreement": {
                                         "type": "boolean",
-                                        "example": 1
+                                        "example": true
                                     },
                                     "terms_agreement": {
                                         "type": "boolean",
-                                        "example": 1
+                                        "example": true
                                     }
                                 },
                                 "type": "object"
@@ -401,43 +865,85 @@
                 }
             }
         },
-        "/api/v1/verify-email": {
-            "post": {
+        "/api/v1/verify-email/{user_uuid}/{otp}": {
+            "get": {
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Verify user email",
-                "operationId": "9d2135286a99603bb399ce12d2014f18",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "verification_code"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "admin@email.com"
-                                    },
-                                    "verification_code": {
-                                        "type": "string",
-                                        "example": "123456"
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "summary": "Verify user email using UUID and OTP",
+                "description": "Validates a user's email address using a UUID and OTP. Marks the account as verified if the code is valid and not expired.",
+                "operationId": "d78b61e023de3a3110ea61b6e0feb27d",
+                "parameters": [
+                    {
+                        "name": "user_uuid",
+                        "in": "path",
+                        "description": "The UUID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                        }
+                    },
+                    {
+                        "name": "otp",
+                        "in": "path",
+                        "description": "The one-time verification code sent to the user's email",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "123456"
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
-                        "description": "Email verified successfully"
+                        "description": "Email verified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email verified successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
-                        "description": "Invalid verification code"
+                        "description": "Invalid or expired verification code",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid verification code"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Account already verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account already verified"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -455,465 +961,6 @@
                     },
                     "401": {
                         "description": "Unauthorized"
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/dashboard": {
-            "get": {
-                "tags": [
-                    "Admin Dashboard"
-                ],
-                "summary": "Get admin dashboard data",
-                "operationId": "getDashboardData",
-                "responses": {
-                    "200": {
-                        "description": "Dashboard data retrieved successfully"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/admin/memberships": {
-            "get": {
-                "tags": [
-                    "Admin Dashboard"
-                ],
-                "summary": "Get admin membership data",
-                "operationId": "getMembershipData",
-                "responses": {
-                    "200": {
-                        "description": "Membership data retrieved successfully"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/institutions": {
-            "get": {
-                "tags": [
-                    "Admin Dashboard"
-                ],
-                "summary": "Get admin institution data",
-                "operationId": "getInstitutionData",
-                "responses": {
-                    "200": {
-                        "description": "Institution data retrieved successfully"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/applications/{user_id}": {
-            "get": {
-                "tags": [
-                    "Admin - Applications"
-                ],
-                "summary": "Get single pending application",
-                "operationId": "29375ee62cebad58dc6ade9add1dc256",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "description": "ID of the user/institution to retrieve",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Application retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "application": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/admin/applications/{user_id}/action": {
-            "post": {
-                "tags": [
-                    "Admin - Applications"
-                ],
-                "summary": "Approve or Reject Institution Application",
-                "operationId": "fdf00ae2b8f87fd371e78ef090ce76c8",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "description": "ID of the user/institution to act on",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "action"
-                                ],
-                                "properties": {
-                                    "action": {
-                                        "type": "string",
-                                        "enum": [
-                                            "approve",
-                                            "reject"
-                                        ],
-                                        "example": "approve"
-                                    },
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "rejection_reason": {
-                                        "type": "string",
-                                        "example": "Incomplete documentation"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Application status updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Application approved successfully."
-                                        },
-                                        "user": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "User not found"
-                    },
-                    "422": {
-                        "description": "Validation error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/admin/notifications/{user_id}": {
-            "get": {
-                "tags": [
-                    "Admin - Notifications"
-                ],
-                "summary": "Get notifications for a user",
-                "operationId": "getNotifications",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "description": "ID of the user to retrieve notifications for",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Notifications retrieved successfully"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/payment-methods": {
-            "get": {
-                "tags": [
-                    "Admin - Payment Method"
-                ],
-                "summary": "Get all payment methods",
-                "operationId": "4d77b700846bf529a23f56b708c75417",
-                "responses": {
-                    "200": {
-                        "description": "List of payment methods"
-                    }
-                }
-            }
-        },
-        "/api/v1/admin/payment-methods/{id}": {
-            "get": {
-                "tags": [
-                    "Admin - Payment Method"
-                ],
-                "summary": "Get a single payment method",
-                "operationId": "c95783a7492c2b0ad23c006a3f015b4f",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Single payment method"
-                    }
-                }
-            },
-            "put": {
-                "tags": [
-                    "Admin - Payment Method"
-                ],
-                "summary": "Update a payment method",
-                "operationId": "73f117b8ef79e6c004b925a864c78dbc",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "mode"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "slug": {
-                                        "type": "string"
-                                    },
-                                    "logo": {
-                                        "type": "file"
-                                    },
-                                    "mode": {
-                                        "type": "string",
-                                        "enum": [
-                                            "test",
-                                            "live"
-                                        ]
-                                    },
-                                    "test_public_key": {
-                                        "type": "string"
-                                    },
-                                    "test_secret_key": {
-                                        "type": "string"
-                                    },
-                                    "live_public_key": {
-                                        "type": "string"
-                                    },
-                                    "live_secret_key": {
-                                        "type": "string"
-                                    },
-                                    "account_name": {
-                                        "type": "string"
-                                    },
-                                    "account_number": {
-                                        "type": "string"
-                                    },
-                                    "bank_name": {
-                                        "type": "string"
-                                    },
-                                    "currency": {
-                                        "type": "string"
-                                    },
-                                    "is_active": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Payment method updated successfully"
-                    },
-                    "404": {
-                        "description": "Payment method not found"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Admin - Payment Method"
-                ],
-                "summary": "Delete a payment method",
-                "operationId": "13ae293c7f73cee9c69225c11d94aed5",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Payment method deleted"
-                    },
-                    "404": {
-                        "description": "Not found"
-                    }
-                }
-            }
-        },
-        "/api/v1/payment-methods": {
-            "post": {
-                "tags": [
-                    "Admin - Payment Method"
-                ],
-                "summary": "Create a new payment method",
-                "operationId": "08bca25d554e94957a6a3b26b57eed26",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "name",
-                                    "slug",
-                                    "logo",
-                                    "mode",
-                                    "is_active"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "slug": {
-                                        "type": "string"
-                                    },
-                                    "logo": {
-                                        "type": "file"
-                                    },
-                                    "mode": {
-                                        "type": "string",
-                                        "enum": [
-                                            "test",
-                                            "live"
-                                        ]
-                                    },
-                                    "test_public_key": {
-                                        "type": "string"
-                                    },
-                                    "test_secret_key": {
-                                        "type": "string"
-                                    },
-                                    "live_public_key": {
-                                        "type": "string"
-                                    },
-                                    "live_secret_key": {
-                                        "type": "string"
-                                    },
-                                    "account_name": {
-                                        "type": "string"
-                                    },
-                                    "account_number": {
-                                        "type": "string"
-                                    },
-                                    "bank_name": {
-                                        "type": "string"
-                                    },
-                                    "currency": {
-                                        "type": "string",
-                                        "default": "NGN"
-                                    },
-                                    "is_active": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Payment method created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "payment_method": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
                     }
                 },
                 "security": [
@@ -1309,12 +1356,12 @@
     },
     "tags": [
         {
-            "name": "Auth",
-            "description": "Authentication related endpoints"
-        },
-        {
             "name": "Admin Dashboard",
             "description": "Admin Dashboard operations"
+        },
+        {
+            "name": "Auth",
+            "description": "Authentication related endpoints"
         },
         {
             "name": "Admin - Applications",

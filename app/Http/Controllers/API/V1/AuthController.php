@@ -386,6 +386,7 @@ class AuthController extends Controller
             // Create institution
             Institution::create([
                 'user_id' => $user->id,
+                'institution_uid' => (string) Str::uuid(),
                 'institution_name' => $request->institution_name,
                 'institution_type' => $request->institution_type,
                 'category_type' => $request->category_type,
@@ -435,43 +436,87 @@ class AuthController extends Controller
         }
     }
 
+
     /**
-     * @OA\Post(
-     *     path="/api/v1/verify-email",
+     * @OA\Get(
+     *     path="/api/v1/verify-email/{user_uuid}/{otp}",
+     *     summary="Verify user email using UUID and OTP",
+     *     description="Validates a user's email address using a UUID and OTP. Marks the account as verified if the code is valid and not expired.",
      *     tags={"Auth"},
-     *     summary="Verify user email",
-     *     @OA\RequestBody(
+     *     @OA\Parameter(
+     *         name="user_uuid",
+     *         in="path",
+     *         description="The UUID of the user",
      *         required=true,
+     *         @OA\Schema(type="string", format="uuid", example="123e4567-e89b-12d3-a456-426614174000")
+     *     ),
+     *     @OA\Parameter(
+     *         name="otp",
+     *         in="path",
+     *         description="The one-time verification code sent to the user's email",
+     *         required=true,
+     *         @OA\Schema(type="string", example="123456")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Email verified successfully",
      *         @OA\JsonContent(
-     *             required={"email", "verification_code"},
-     *             @OA\Property(property="email", type="string", example="admin@email.com"),
-     *             @OA\Property(property="verification_code", type="string", example="123456")
+     *             @OA\Property(property="message", type="string", example="Email verified successfully")
      *         )
      *     ),
-     *     @OA\Response(response=200, description="Email verified successfully"),
-     *     @OA\Response(response=400, description="Invalid verification code")
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid or expired verification code",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid verification code")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Account already verified",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Account already verified")
+     *         )
+     *     )
      * )
      */
-    public function verifyEmail(Request $request)
+    public function verifyEmail($user_uuid, $otp)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'verification_code' => 'required|string',
-        ]);
-        $user = User::where('email', $request->email)->where('otp', $request->verification_code)->first();
+        // Find the user by UUID and OTP
+        $user = User::where('user_uid', $user_uuid)
+            ->where('otp', $otp)
+            ->first();
+
         if (!$user) {
             return response()->json(['message' => 'Invalid verification code'], 400);
         }
-        $user->is_verified = true;
-        $user->verification_code = null; // Clear the verification code after successful verification
+
+        // Check if already verified
+        if ($user->is_verified) {
+            return response()->json(['message' => 'Account already verified'], 409);
+        }
+        // Check if OTP is expired
+        if ($user->otp_expires_at < now()) {
+            return response()->json(['message' => 'Verification code expired'], 400);
+        }
+        // Clear OTP and expiry
+        $user->otp = null;
+        $user->otp_expires_at = null;
+
+        // Mark user as verified
+        $user->is_verified = 1;
+        $user->email_verified_at = now(); // Set email verified timestamp
         $user->save();
+
         return response()->json(['message' => 'Email verified successfully']);
     }
+
 
     /**
      * @OA\Post(
      *     path="/api/v1/logout",
      *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
      *     summary="Logout user",
      *     @OA\Response(response=200, description="Logout successful"),
      *     @OA\Response(response=401, description="Unauthorized")
@@ -495,10 +540,18 @@ class AuthController extends Controller
         $user->otp_expires_at = now()->addHour(); // expires in 1 hour
         $user->save();
 
-        // Send OTP via email
-        Mail::raw("Your OTP is: {$otp}", function ($message) use ($user) {
+        // Create verification link
+        $verificationLink = "https://comcin.com.ng/verify/{$user->user_uid}/{$otp}";
+
+        // Send OTP and link via email
+        $emailBody = "Your OTP is: {$otp}\n\n"
+            . "Click the link below to verify your email:\n"
+            . "{$verificationLink}\n\n"
+            . "Note: This code/link will expire in 1 hour.";
+
+        Mail::raw($emailBody, function ($message) use ($user) {
             $message->to($user->email)
-                ->subject('Your OTP Code');
+                ->subject('Your OTP Code and Verification Link');
         });
     }
 }
