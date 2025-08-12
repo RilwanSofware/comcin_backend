@@ -9,13 +9,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * @OA\Tag(
- *     name="Admin Dashboard",
- *    description="Admin Dashboard operations"
- * )
- */
-
 
 class DashboardController extends Controller
 {

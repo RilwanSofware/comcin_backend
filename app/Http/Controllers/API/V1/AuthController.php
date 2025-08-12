@@ -25,6 +25,14 @@ use Illuminate\Support\Facades\Log;
  *     name="Auth",
  *     description="Authentication related endpoints"
  * ),
+ * @OA\Tag(
+ *    name="Admin Dashboard",
+ *    description="Admin Dashboard operations"
+ * )
+ * @OA\Tag(
+ *    name="Member Dashboard",
+ *   description="Member related operations"
+ * ),
  *
  * @OA\SecurityScheme(
  *     securityScheme="bearerAuth",
@@ -35,10 +43,6 @@ use Illuminate\Support\Facades\Log;
  * ),
  *  *
  *     security={{"bearerAuth": {}}}
- * ),
- *   @OA\Tag(
- *     name="Auth",
- *     description="Authentication related endpoints"
  * )
  * 
  */

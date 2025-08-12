@@ -969,6 +969,155 @@
                     }
                 ]
             }
+        },
+        "/api/v1/member/dashboard": {
+            "get": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Get Member Dashboard",
+                "description": "Fetches the member's dashboard data including user and institution information.",
+                "operationId": "e4e7870b334a9d656c39565e706fd06a",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of member dashboard data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "institution": {
+                                            "$ref": "#/components/schemas/Institution"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/payment/verify": {
+            "post": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Verify Paystack Payment",
+                "description": "Verifies a Paystack payment using the transaction reference.",
+                "operationId": "c151d3f098c642b57eed882eba4ef7f2",
+                "parameters": [
+                    {
+                        "name": "reference",
+                        "in": "query",
+                        "description": "The Paystack transaction reference to verify",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful verification of Paystack payment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment verified successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, invalid or missing reference",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid reference"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred while verifying payment"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1356,12 +1505,16 @@
     },
     "tags": [
         {
+            "name": "Auth",
+            "description": "Authentication related endpoints"
+        },
+        {
             "name": "Admin Dashboard",
             "description": "Admin Dashboard operations"
         },
         {
-            "name": "Auth",
-            "description": "Authentication related endpoints"
+            "name": "Member Dashboard",
+            "description": "Member related operations"
         },
         {
             "name": "Admin - Applications",
@@ -1374,6 +1527,10 @@
         {
             "name": "Admin - Payment Method",
             "description": "Admin - Payment Method"
+        },
+        {
+            "name": "Member",
+            "description": "Member"
         }
     ]
 }

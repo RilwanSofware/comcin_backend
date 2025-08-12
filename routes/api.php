@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\API\V1\Admin\PaymentMethodController as AdminPaymentMethodController;
 use App\Http\Controllers\API\V1\AuthController;
+use App\Http\Controllers\API\V1\Member\DashboardController as MemberDashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,8 @@ Route::prefix('v1')->group(function () {
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
 
+        // Routes accessible to both admins and members
+        Route::post('logout', [AuthController::class, 'logout']);
 
         // Admin routes
         Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'admin']], function () {
@@ -37,22 +40,16 @@ Route::prefix('v1')->group(function () {
             Route::get('institutions', [AdminDashboardController::class, 'institutions']);
             Route::get('applications', [AdminDashboardController::class, 'applications']);
             Route::get('notifications/{userId}', [AdminDashboardController::class, 'notifications']);
-            
+
             // approveOrRejectApplication
             Route::post('applications/{user_id}/action"', [AdminDashboardController::class, 'approveOrRejectApplication']);
         });
 
 
         // Member routes
-        Route::middleware('member')->group(function () {
-            Route::get('/member/dashboard', function () {
-                return response()->json(['message' => 'Member dashboard']);
-            });
-
-            // Add more member routes here
+        Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'admin']], function () {
+            
+            Route::get('dashboard', [MemberDashboardController::class, 'index']);
         });
-
-        // Routes accessible to both admins and members
-        Route::post('logout', [AuthController::class, 'logout']);
     });
 });
