@@ -19,11 +19,10 @@ class DashboardController extends Controller
      * @OA\Get(
      *   path="/api/v1/member/dashboard",
      *  summary="Get Member Dashboard",
-     * 
-     * description="Fetches the member's dashboard data including user and institution information.",
-     * tags={"Member Dashboard"},
-     * security={{"sanctum":{}}},
-     * @OA\Response(
+     *  description="Fetches the member's dashboard data including user and institution information.",
+     *  tags={"Member Dashboard"},
+     *  security={{"bearerAuth":{}}},
+     *  @OA\Response(
      *     response=200,
      *     description="Successful retrieval of member dashboard data",
      *     @OA\JsonContent(
@@ -48,13 +47,12 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         //get Institution
-        $institution = $user->institution;
+        $user->institution;
 
 
         // Logic to retrieve member-specific dashboard data
         $data = [
-            $user,
-            $institution
+            $user
         ];
 
         return response()->json($data);

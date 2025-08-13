@@ -73,18 +73,19 @@ class DashboardController extends Controller
      *      operationId="getMembershipData",
      *      summary="Get admin membership data",
      *      tags={"Admin Dashboard"},
+     *      security={{"bearerAuth":{}}},
      *      @OA\Response(response=200, description="Membership data retrieved successfully"),
      *      @OA\Response(response=500, description="Internal server error")
      * * )
      */
-    public function membership()
+    public function memberships()
     {
         try {
-            $total_members = User::where('role', 'member')->count();
-            $total_pending = User::where('role', 'member')->where('is_approved', 0)->count();
-            $total_approved = User::where('role', 'member')->where('is_approved', 1)->count();
-            $total_rejected = User::where('role', 'member')->where('is_approved', 2)->count();
-            $pending_applications = User::where('role', 'member')->where('is_approved', 0)->get();
+            $total_members = Institution::count();
+            $total_pending = Institution::where('is_approved', 0)->count();
+            $total_approved = Institution::where('is_approved', 1)->count();
+            $total_rejected = Institution::where('is_approved', 2)->count();
+            $pending_applications = Institution::where('is_approved', 0)->get();
             $data = [
                 'total_members' => $total_members,
                 'total_pending' => $total_pending,
@@ -109,13 +110,29 @@ class DashboardController extends Controller
      *     operationId="getInstitutionData",
      *     summary="Get admin institution data",
      *     tags={"Admin Dashboard"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(response=200, description="Institution data retrieved successfully"),
      *     @OA\Response(response=500, description="Internal server error")
      * )
      */
-    public function institution()
+    public function institutions()
     {
         try {
+            $total_institutions = Institution::count();
+            $total_pending = Institution::where('is_approved', 0)->count();
+            $total_approved = Institution::where('is_approved', 1)->count();
+            $total_rejected = Institution::where('is_approved', 2)->count();
+            $pending_applications = Institution::where('is_approved', 0)->get();
+
+            $data = [
+                'total_institutions' => $total_institutions,
+                'total_pending' => $total_pending,
+                'total_approved' => $total_approved,
+                'total_rejected' => $total_rejected,
+                'pending_applications' => $pending_applications,
+            ];
+
+            return response()->json(['data' => $data], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Unable to fetch institution data.'], 500);
         }
@@ -153,7 +170,11 @@ class DashboardController extends Controller
     {
         try {
             $user = User::findOrFail($user_id);
-            return response()->json(['application' => $user], 200);
+            $institution = Institution::where('user_id', $user->id)->first();
+            if (!$institution) {
+                return response()->json(['error' => 'Institution not found for this user.'], 404);
+            }
+            return response()->json(['application' => $institution], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'User not found.'], 404);
         }

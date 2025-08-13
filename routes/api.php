@@ -47,7 +47,7 @@ Route::prefix('v1')->group(function () {
 
 
         // Member routes
-        Route::group(['prefix' => 'admin', 'middleware' => ['auth:sanctum', 'admin']], function () {
+        Route::group(['prefix' => 'member', 'middleware' => ['auth:sanctum', 'member']], function () {
             
             Route::get('dashboard', [MemberDashboardController::class, 'index']);
         });
