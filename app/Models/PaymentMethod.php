@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Model;
  *  title="PaymentMethod",
  *  required={"name", "slug", "mode"},
  *      @OA\Property(property="id", type="integer", example=1),
- *      @OA\Property(property="name", type="string", example="Paystack"),  
- *      @OA\Property(property="slug", type="string", example="paystack"),
+ *      @OA\Property(property="name", type="string", enum={"paystack", "bank-tansfer"}, example="paystack"),
+ *      @OA\Property(property="slug", type="string", example="paystack"),  
  *      @OA\Property(property="logo", type="string", nullable=true, example="uploads/payment_methods/paystack.png"),
  *      @OA\Property(property="mode", type="string", enum={"test", "live"}, example="test"),
  *      @OA\Property(property="test_public_key", type="string", example="pk_test_1234567890"),
@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  *      @OA\Property(property="currency", type="string", example="NGN"),
  *      @OA\Property(property="is_active", type="boolean", example=true),
  *      @OA\Property(property="created_at", type="string", format="date-time"),
- *      @OA\Property(property="updated_at", type="string", format="date-time"),
+ *      @OA\Property(property="updated_at", type="string", format="date-time")
  * )  
  * */
 
@@ -52,4 +52,6 @@ class PaymentMethod extends Model
 
         'is_active',
     ];
+
+    
 }

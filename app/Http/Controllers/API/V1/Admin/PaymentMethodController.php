@@ -21,6 +21,7 @@ class PaymentMethodController extends Controller
      *     path="/api/v1/admin/payment-methods",
      *     summary="Get all payment methods",
      *     tags={"Admin - Payment Method"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(response=200, description="List of payment methods")
      * )
      */
@@ -35,6 +36,7 @@ class PaymentMethodController extends Controller
      *     path="/api/v1/admin/payment-methods/{id}",
      *     summary="Get a single payment method",
      *     tags={"Admin - Payment Method"},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -256,6 +258,7 @@ class PaymentMethodController extends Controller
      *     path="/api/v1/admin/payment-methods/{id}",
      *     summary="Delete a payment method",
      *     tags={"Admin - Payment Method"},
+     *    security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

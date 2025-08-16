@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('narration')->nullable(); // optional note or purpose
             $table->timestamp('paid_at')->nullable(); // when it was paid
             $table->foreignId('recorded_by')->nullable()->constrained('users')->nullOnDelete(); // admin or officer who recorded it
-
+            $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->nullOnDelete(); // payment method used
+            $table->string('receipt_file')->nullable(); // optional URL to the transaction receipt
             $table->timestamps();
         });
     }

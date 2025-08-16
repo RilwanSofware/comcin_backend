@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="membership_agreement", type="boolean", example=true),
  *     @OA\Property(property="terms_agreement", type="boolean", example=true),
  *
+ *    @OA\Property(property="status", type="string", enum={"pending", "verifying", "approved", "rejected"}, example="pending"),
  *     @OA\Property(property="is_approved", type="integer", example=0),
  *     @OA\Property(property="rejection_reason", type="string", nullable=true, example="Incomplete documents"),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2025-08-11T10:00:00Z"),
@@ -71,6 +72,7 @@ class Institution extends Model
         'other_supporting_document',
         'membership_agreement',
         'terms_agreement',
+        'status', // e.g., 'pending', 'approved', 'rejected', 'verifying'
         'is_approved',
         'rejection_reason',
     ];

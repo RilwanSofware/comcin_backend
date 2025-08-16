@@ -50,6 +50,9 @@ Route::prefix('v1')->group(function () {
         Route::group(['prefix' => 'member', 'middleware' => ['auth:sanctum', 'member']], function () {
             
             Route::get('dashboard', [MemberDashboardController::class, 'index']);
+            Route::get('institution', [MemberDashboardController::class, 'institution']);
+            Route::get('financials', [MemberDashboardController::class, 'financials']);
+            Route::get('certificates', [MemberDashboardController::class, 'certificates']);
         });
     });
 });

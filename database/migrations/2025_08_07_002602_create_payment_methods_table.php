@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Paystack, Flutterwave, Bank Transfer
-            $table->string('slug')->unique(); // paystack, flutterwave, bank-transfer
+            $table->enum('name', ['paystack', 'bank-transfer']); // Paystack, Flutterwave, Bank Transfer
+            $table->string('slug');
             $table->string('logo')->nullable(); // Logo of the payment method
             $table->enum('mode', ['test', 'live'])->default('live'); // Payment mode
 

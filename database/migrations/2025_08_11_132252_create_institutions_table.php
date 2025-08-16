@@ -50,6 +50,7 @@ return new class extends Migration
             $table->text('descriptions')->nullable();
 
             // Approval status
+            $table->enum('status', ['pending', 'verifying', 'approved', 'rejected'])->default('pending');
             $table->boolean('is_approved')->default(false);
             $table->string('rejection_reason')->nullable();
 

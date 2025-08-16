@@ -25,15 +25,14 @@ use Illuminate\Support\Facades\Log;
  *     name="Auth",
  *     description="Authentication related endpoints"
  * ),
- * @OA\Tag(
- *    name="Admin Dashboard",
- *    description="Admin Dashboard operations"
- * )
- * @OA\Tag(
- *    name="Member Dashboard",
- *   description="Member related operations"
+    * @OA\Tag(
+    *     name="Admin",
+    *     description="Admin related endpoints"
  * ),
- *
+ * @OA\Tag(
+ *     name="Member",
+ *     description="Member related endpoints"
+ * ),
  * @OA\SecurityScheme(
  *     securityScheme="bearerAuth",
  *     type="http",
@@ -41,7 +40,6 @@ use Illuminate\Support\Facades\Log;
  *     bearerFormat="JWT",
  *     description="Enter token in format **Bearer &lt;token&gt;**"
  * ),
- *  *
  *     security={{"bearerAuth": {}}}
  * )
  * 

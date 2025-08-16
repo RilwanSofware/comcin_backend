@@ -34,9 +34,9 @@ use Illuminate\Support\Str;
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
  *     @OA\Property(property="role", type="string", example="member"),
- *    @OA\Property(property="avatar", type="string", example="uploads/avatars/uuid/avatar.png"),
- *    @OA\Property(property="phone_number", type="string", example="+2348012345678"),
- *    @OA\Property(property="designation", type="string", example="Manager"),
+ *     @OA\Property(property="avatar", type="string", example="uploads/avatars/uuid/avatar.png"),
+ *     @OA\Property(property="phone_number", type="string", example="+2348012345678"),
+ *     @OA\Property(property="designation", type="string", example="Manager"),
  *     @OA\Property(property="is_active", type="boolean", example=true),
  *     @OA\Property(property="is_verified", type="boolean", example=false),
  *     @OA\Property(property="created_at", type="string", format="date-time", example="2025-08-11T10:00:00Z"),
@@ -89,6 +89,23 @@ class User extends Authenticatable
     {
         return $this->hasOne(Institution::class);
     }
+
+    /**
+     * Relation: A user may have many charges
+     */
+    public function charge()
+    {
+        return $this->hasMany(Charges::class, 'member_id');
+    }
+
+    /**
+     * Relation: A user may have many certificates
+     */
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class, 'member_id');
+    }
+
     /**
      * Check if user is admin.
      */

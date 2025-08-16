@@ -151,6 +151,7 @@
                                         "type": "string",
                                         "enum": [
                                             "approve",
+                                            "verifying",
                                             "reject"
                                         ],
                                         "example": "approve"
@@ -242,7 +243,12 @@
                     "200": {
                         "description": "List of payment methods"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/admin/payment-methods/{id}": {
@@ -266,7 +272,12 @@
                     "200": {
                         "description": "Single payment method"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -380,7 +391,12 @@
                     "404": {
                         "description": "Not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/payment-methods": {
@@ -1000,12 +1016,170 @@
                                         },
                                         "institution": {
                                             "$ref": "#/components/schemas/Institution"
+                                        },
+                                        "pending_charges_count": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "next_payment_charges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Charges"
+                                            }
+                                        },
+                                        "certificate_count": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "latest_certificate": {
+                                            "$ref": "#/components/schemas/Certificate"
+                                        },
+                                        "pending_charges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Charges"
+                                            }
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/institution": {
+            "get": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Get Member Institution",
+                "description": "Fetches the institution information of the authenticated member.",
+                "operationId": "6316d6e0bde8d2a050e50ea30f62effd",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of institution data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Institution"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Institution not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/financials": {
+            "get": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Get Member Financials",
+                "description": "Fetches the financial information of the authenticated member including pending and paid charges.",
+                "operationId": "a622eab899d61d41464f2310b0b6182d",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of financial data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "pending_charges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Charges"
+                                            }
+                                        },
+                                        "paid_charges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Charges"
+                                            }
+                                        },
+                                        "total_pending_amount": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 100
+                                        },
+                                        "total_paid_amount": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Institution not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/certificates": {
+            "get": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Get Member Certificates",
+                "description": "Fetches the certificates associated with the authenticated member.",
+                "operationId": "ed7157679782e3cba8364876a73815f4",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of certificates",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Certificate"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No certificates found"
                     },
                     "401": {
                         "description": "Unauthorized, user must be authenticated"
@@ -1132,6 +1306,119 @@
     },
     "components": {
         "schemas": {
+            "Certificate": {
+                "required": [
+                    "id",
+                    "user_id",
+                    "title",
+                    "issued_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Membership Certificate"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Certificate of Membership"
+                    },
+                    "issued_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "expired"
+                        ],
+                        "example": "active"
+                    },
+                    "file_path": {
+                        "type": "string",
+                        "example": "uploads/certificates/certificate12345.pdf"
+                    }
+                },
+                "type": "object"
+            },
+            "Charges": {
+                "required": [
+                    "id",
+                    "member_id",
+                    "title",
+                    "type",
+                    "amount"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "member_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Monthly Dues"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Monthly membership dues"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "due",
+                            "levy",
+                            "fine"
+                        ],
+                        "example": "due"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "unpaid",
+                            "paid"
+                        ],
+                        "example": "unpaid"
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-08-11"
+                    },
+                    "paid_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-11T10:00:00Z"
+                    },
+                    "created_by": {
+                        "type": "integer",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
             "Institution": {
                 "required": [
                     "institution_name",
@@ -1242,6 +1529,16 @@
                     "terms_agreement": {
                         "type": "boolean",
                         "example": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "verifying",
+                            "approved",
+                            "rejected"
+                        ],
+                        "example": "pending"
                     },
                     "is_approved": {
                         "type": "integer",
@@ -1371,7 +1668,11 @@
                     },
                     "name": {
                         "type": "string",
-                        "example": "Paystack"
+                        "enum": [
+                            "paystack",
+                            "bank-tansfer"
+                        ],
+                        "example": "paystack"
                     },
                     "slug": {
                         "type": "string",
@@ -1436,6 +1737,69 @@
                     "updated_at": {
                         "type": "string",
                         "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Transaction": {
+                "required": [
+                    "member_id",
+                    "amount",
+                    "transaction_type",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "member_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "charge_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "reference": {
+                        "type": "string",
+                        "example": "TXN-20250807-XYZ123"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100
+                    },
+                    "transaction_type": {
+                        "type": "string",
+                        "enum": [
+                            "deposit",
+                            "withdrawal",
+                            "transfer"
+                        ],
+                        "example": "deposit"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "completed",
+                            "failed"
+                        ],
+                        "example": "completed"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Payment for monthly dues"
+                    },
+                    "payment_method_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "receipt_file": {
+                        "type": "string",
+                        "example": "uploads/receipts/txn12345.png",
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -1519,12 +1883,12 @@
             "description": "Authentication related endpoints"
         },
         {
-            "name": "Admin Dashboard",
-            "description": "Admin Dashboard operations"
+            "name": "Member",
+            "description": "Member related endpoints"
         },
         {
-            "name": "Member Dashboard",
-            "description": "Member related operations"
+            "name": "Admin Dashboard",
+            "description": "Admin Dashboard"
         },
         {
             "name": "Admin - Applications",
@@ -1539,8 +1903,8 @@
             "description": "Admin - Payment Method"
         },
         {
-            "name": "Member",
-            "description": "Member"
+            "name": "Member Dashboard",
+            "description": "Member Dashboard"
         }
     ]
 }
