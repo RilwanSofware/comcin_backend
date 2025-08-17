@@ -334,7 +334,7 @@ class AuthController extends Controller
             ]);
 
             $userUid = (string) Str::uuid();
-            $uploadPath = public_path('uploads/institutions/' . $userUid);
+            $uploadPath = public_path('uploads/' . $userUid. '/institutions');
 
             //if true or false retun 0 or 1
             $request->merge([
@@ -364,7 +364,8 @@ class AuthController extends Controller
             foreach ($fileFields as $field => $filename) {
                 if ($request->hasFile($field)) {
                     $request->file($field)->move($uploadPath, $filename);
-                    $paths[$field] = 'uploads/institutions/' . $userUid . '/' . $filename;
+                    $paths[$field] = 'uploads/' . $userUid . '/institutions/' . $filename;
+                   
                 } else {
                     $paths[$field] = null;
                 }

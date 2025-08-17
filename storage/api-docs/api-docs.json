@@ -1096,6 +1096,54 @@
                 ]
             }
         },
+        "/api/v1/member/edit-institution": {
+            "get": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Edit Member Institution",
+                "description": "Allows the authenticated member to edit their institution information.",
+                "operationId": "a2bca5a5ac8174448e3f7000ce39c621",
+                "responses": {
+                    "200": {
+                        "description": "Successful update of institution information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Institution updated successfully"
+                                        },
+                                        "institution": {
+                                            "$ref": "#/components/schemas/Institution"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error, invalid input data"
+                    },
+                    "404": {
+                        "description": "Institution not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/member/financials": {
             "get": {
                 "tags": [
@@ -1195,14 +1243,168 @@
                 ]
             }
         },
-        "/api/v1/member/payment/verify": {
+        "/api/v1/member/notifications": {
+            "get": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Get Member Notifications",
+                "description": "Fetches the notifications for the authenticated member.",
+                "operationId": "19415f698767e3fea5282d8b1d9717f4",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of notifications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Notification"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/notifications/mark-as-read": {
+            "post": {
+                "tags": [
+                    "Member Dashboard"
+                ],
+                "summary": "Mark Notification as Read",
+                "description": "Marks a notification as read for the authenticated member.",
+                "operationId": "dfc21d4b7b975b79ddc06090d60bcabf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "notification_id"
+                                ],
+                                "properties": {
+                                    "notification_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notification marked as read successfully"
+                    },
+                    "404": {
+                        "description": "Notification not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/payment": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Get Payment Methods",
+                "description": "Fetches all active payment methods available for the member.",
+                "operationId": "91956e6deabcab2c609d061b82d1d16c",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of payment methods",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PaymentMethod"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred while fetching payment methods"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/payment/paystack/verify": {
             "post": {
                 "tags": [
                     "Member"
                 ],
                 "summary": "Verify Paystack Payment",
                 "description": "Verifies a Paystack payment using the transaction reference.",
-                "operationId": "c151d3f098c642b57eed882eba4ef7f2",
+                "operationId": "bbc735b974dc83b5bd69673713c063b8",
                 "parameters": [
                     {
                         "name": "reference",
@@ -1299,6 +1501,269 @@
                 "security": [
                     {
                         "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/payment/manual": {
+            "post": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Record Manual Payment",
+                "description": "Records a manual payment made by the member.",
+                "operationId": "9878f8cb7ff163b93fdafc35433f4da5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "member_id",
+                                    "amount",
+                                    "receipt"
+                                ],
+                                "properties": {
+                                    "member_id": {
+                                        "description": "ID of the member making the payment",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "charge_id": {
+                                        "description": "ID of the charge being paid (optional)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount": {
+                                        "description": "Amount being paid",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1000
+                                    },
+                                    "receipt": {
+                                        "description": "Receipt file for the payment",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Manual payment recorded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Manual payment recorded successfully"
+                                        },
+                                        "charge": {
+                                            "$ref": "#/components/schemas/Charges"
+                                        },
+                                        "transaction": {
+                                            "$ref": "#/components/schemas/Transaction"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, validation errors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden, charge does not belong to this member",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Charge does not belong to this member"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized, user must be authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment failed"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/support/tickets": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Get All Support Tickets",
+                "description": "Retrieves all support tickets for the authenticated member.",
+                "operationId": "4d93c68e2ac2867710b830a6d608e6c4",
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of support tickets."
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Create Support Ticket",
+                "description": "Creates a new support ticket for the authenticated member.",
+                "operationId": "22014d96eeb61386f642312f8f8f0c51",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "subject",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "subject": {
+                                        "type": "string",
+                                        "example": "Issue with Membership"
+                                    },
+                                    "message": {
+                                        "type": "string",
+                                        "example": "I am having issues with my membership renewal."
+                                    },
+                                    "attachment": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Support ticket created successfully."
+                    },
+                    "400": {
+                        "description": "Bad Request - Validation errors or missing fields."
+                    },
+                    "401": {
+                        "description": "Unauthorized - User not authenticated."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/support/tickets/{uuid}": {
+            "get": {
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Get Support Ticket",
+                "description": "Retrieves a specific support ticket by UUID for the authenticated member.",
+                "operationId": "4d7a6a870cc3c51be00ab26d75b8f3e6",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The UUID of the support ticket.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of the support ticket."
+                    },
+                    "404": {
+                        "description": "Support ticket not found."
+                    },
+                    "401": {
+                        "description": "Unauthorized - User not authenticated."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
                     }
                 ]
             }
@@ -1737,6 +2202,85 @@
                     "updated_at": {
                         "type": "string",
                         "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Support": {
+                "required": [
+                    "uuid",
+                    "user_id",
+                    "name",
+                    "email",
+                    "subject",
+                    "message",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "uuid": {
+                        "type": "string",
+                        "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "member@example.com"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "example": "Issue with Membership"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "I am having trouble accessing my membership benefits."
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "resolved",
+                            "cancelled"
+                        ],
+                        "example": "pending"
+                    },
+                    "attachment": {
+                        "type": "string",
+                        "example": "uploads/support/attachment.png",
+                        "nullable": true
+                    },
+                    "resolved_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-17T12:00:00Z",
+                        "nullable": true
+                    },
+                    "cancelled_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-17T12:00:00Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-17T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-08-17T12:00:00Z"
                     }
                 },
                 "type": "object"

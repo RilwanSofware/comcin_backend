@@ -107,6 +107,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation: A user may have many notifications
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    /**
+     * Relation: A user may have many support tickets
+     */
+    public function supportTickets()
+    {
+        return $this->hasMany(Support::class, 'user_id');
+    }
+
+    /**
      * Check if user is admin.
      */
     public function isAdmin(): bool

@@ -4,6 +4,8 @@ use App\Http\Controllers\API\V1\Admin\DashboardController as AdminDashboardContr
 use App\Http\Controllers\API\V1\Admin\PaymentMethodController as AdminPaymentMethodController;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\Member\DashboardController as MemberDashboardController;
+use App\Http\Controllers\API\V1\Member\PaymentController as MemberPaymentController;
+use App\Http\Controllers\API\V1\Member\SupportController as MemberSupportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -51,8 +53,25 @@ Route::prefix('v1')->group(function () {
             
             Route::get('dashboard', [MemberDashboardController::class, 'index']);
             Route::get('institution', [MemberDashboardController::class, 'institution']);
+            Route::post('edit-institution', [MemberDashboardController::class, 'editInstitution']);
             Route::get('financials', [MemberDashboardController::class, 'financials']);
             Route::get('certificates', [MemberDashboardController::class, 'certificates']);
+
+            //payment
+            Route::get('payment', [MemberPaymentController::class, 'getPaymentMethods']);
+            Route::post('payment/manual', [MemberPaymentController::class, 'manualPayment']);
+            Route::post('payment/paystack/verify', [MemberPaymentController::class, 'verifyPaystackPayment']);
+
+            // Notifications
+            Route::get('notifications', [MemberDashboardController::class, 'notifications']);
+            Route::post('notifications/mark-as-read', [MemberDashboardController::class, 'markNotificationAsRead']);
+
+            // Support tickets
+            Route::get('support/tickets', [MemberSupportController::class, 'getAllSupportTickets']);
+            Route::post('support/tickets', [MemberSupportController::class, 'createSupportTicket']);
+            Route::get('support/tickets/{uuid}', [MemberSupportController::class, 'getSupportTicket']);
+
+
         });
     });
 });
