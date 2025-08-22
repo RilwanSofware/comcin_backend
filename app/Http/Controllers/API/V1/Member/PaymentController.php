@@ -22,7 +22,7 @@ class PaymentController extends Controller
      *   path="/api/v1/member/payment",
      *   summary="Get Payment Methods",
      *   description="Fetches all active payment methods available for the member.",
-     *   tags={"Member"},
+     *   tags={"Member - Payments"},
      *   security={{"sanctum":{}}},
      *   @OA\Response(
      *       response=200,
@@ -74,7 +74,7 @@ class PaymentController extends Controller
      *   path="/api/v1/member/payment/paystack/verify",
      *   summary="Verify Paystack Payment",
      *   description="Verifies a Paystack payment using the transaction reference.",
-     *   tags={"Member"},
+     *   tags={"Member - Payments"},
      *   security={{"sanctum":{}}},
      *   @OA\Parameter(
      *       name="reference",
@@ -214,7 +214,7 @@ class PaymentController extends Controller
      *  path="/api/v1/member/payment/manual",
      *   summary="Record Manual Payment",
      *   description="Records a manual payment made by the member.",
-     *   tags={"Member"},
+     *   tags={"Member - Payments"},
      *   security={{"sanctum":{}}},
      *   @OA\RequestBody(
      *       required=true,

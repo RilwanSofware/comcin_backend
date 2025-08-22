@@ -9,10 +9,444 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/v1/admin/admins": {
+            "get": {
+                "tags": [
+                    "Admin - Admins"
+                ],
+                "summary": "Get all admins except the first",
+                "description": "Fetches a paginated list of all admins, excluding the very first created admin.",
+                "operationId": "bfedd9962eb6f074c3d94ee37b77acd6",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of admins retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "admin@example.com"
+                                                    },
+                                                    "role": {
+                                                        "type": "string",
+                                                        "example": "admin"
+                                                    },
+                                                    "is_active": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 42
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Admins"
+                ],
+                "summary": "Create a new admin",
+                "description": "Creates a new admin with name, email, password, and role.",
+                "operationId": "ed6cef438ca1e2cef594d980c37a34c3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "jane@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Admin created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Jane Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "jane@example.com"
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "admin"
+                                        },
+                                        "is_active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/admins/{id}": {
+            "put": {
+                "tags": [
+                    "Admin - Admins"
+                ],
+                "summary": "Update an admin",
+                "description": "Updates an admin’s details such as name, email, password, role, or status.",
+                "operationId": "2a7ccfb7d79f4a52fafd44c3818a6fd5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "jane_new@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "super-admin"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Admin updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Jane Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "jane_new@example.com"
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "super-admin"
+                                        },
+                                        "is_active": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Admins"
+                ],
+                "summary": "Delete an admin",
+                "description": "Permanently delete an admin by ID (except the first super admin).",
+                "operationId": "52e39449693565c13d5eaba59ccb85d9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the admin to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/admins/{id}/deactivate": {
+            "patch": {
+                "tags": [
+                    "Admin - Admins"
+                ],
+                "summary": "Deactivate an admin",
+                "description": "Mark an admin as inactive instead of deleting.",
+                "operationId": "6368fd9472e2b13e974e23bdb040d666",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the admin to deactivate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin deactivated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin deactivated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/admin/dashboard": {
             "get": {
                 "tags": [
-                    "Admin Dashboard"
+                    "Admin - Dashboard"
                 ],
                 "summary": "Get admin dashboard data",
                 "operationId": "getDashboardData",
@@ -34,7 +468,7 @@
         "/api/v1/admin/memberships": {
             "get": {
                 "tags": [
-                    "Admin Dashboard"
+                    "Admin - Dashboard"
                 ],
                 "summary": "Get admin membership data",
                 "operationId": "getMembershipData",
@@ -56,7 +490,7 @@
         "/api/v1/admin/institutions": {
             "get": {
                 "tags": [
-                    "Admin Dashboard"
+                    "Admin - Dashboard"
                 ],
                 "summary": "Get admin institution data",
                 "operationId": "getInstitutionData",
@@ -204,6 +638,107 @@
                 ]
             }
         },
+        "/api/v1/admin/financials": {
+            "get": {
+                "tags": [
+                    "Admin - Dashboard"
+                ],
+                "summary": "Get financial statistics",
+                "description": "Returns key financial metrics such as total revenue, levies, pending dues, success rate, and monthly revenue trends.",
+                "operationId": "6eb8b2587d568b62218d6e23f6dff4fe",
+                "responses": {
+                    "200": {
+                        "description": "Financial statistics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_revenue": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 150000
+                                        },
+                                        "total_levies": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 45000
+                                        },
+                                        "pending_dues": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 25000
+                                        },
+                                        "succesful_payment_count": {
+                                            "type": "integer",
+                                            "example": 120
+                                        },
+                                        "total_transaction_count": {
+                                            "type": "integer",
+                                            "example": 150
+                                        },
+                                        "percentage_success_rate": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 80
+                                        },
+                                        "percentage_total_revenue": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 15.5
+                                        },
+                                        "percentage_total_levies": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 12.3
+                                        },
+                                        "percentage_pending_dues": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": -5.2
+                                        },
+                                        "monthly_revenue": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "month": {
+                                                        "type": "string",
+                                                        "example": "2025-03"
+                                                    },
+                                                    "total": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 30000
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "all_charges": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Charges"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/admin/notifications/{user_id}": {
             "get": {
                 "tags": [
@@ -242,6 +777,104 @@
                 "responses": {
                     "200": {
                         "description": "List of payment methods"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Payment Method"
+                ],
+                "summary": "Create a new payment method",
+                "operationId": "f3b3d501e254251e23bd71c0e728b3e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "logo",
+                                    "mode",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "slug": {
+                                        "type": "string"
+                                    },
+                                    "logo": {
+                                        "type": "file"
+                                    },
+                                    "mode": {
+                                        "type": "string",
+                                        "enum": [
+                                            "test",
+                                            "live"
+                                        ]
+                                    },
+                                    "test_public_key": {
+                                        "type": "string"
+                                    },
+                                    "test_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "live_public_key": {
+                                        "type": "string"
+                                    },
+                                    "live_secret_key": {
+                                        "type": "string"
+                                    },
+                                    "account_name": {
+                                        "type": "string"
+                                    },
+                                    "account_number": {
+                                        "type": "string"
+                                    },
+                                    "bank_name": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "default": "NGN"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment method created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "payment_method": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
                     }
                 },
                 "security": [
@@ -399,69 +1032,100 @@
                 ]
             }
         },
-        "/api/v1/payment-methods": {
+        "/api/v1/aadmin/settings/general": {
+            "get": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Get general settings",
+                "description": "Retrieve general settings such as organization name, logo, contact email, and phone number.",
+                "operationId": "7e6f1386ae9b0cca2d0ea59a368df55c",
+                "responses": {
+                    "200": {
+                        "description": "General settings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "General settings retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "organization_name": {
+                                                    "type": "string",
+                                                    "example": "Comcin"
+                                                },
+                                                "logo": {
+                                                    "type": "string",
+                                                    "example": "uploads/settings/logo.png"
+                                                },
+                                                "contact_email": {
+                                                    "type": "string",
+                                                    "example": "info@comcin.org"
+                                                },
+                                                "phone_number": {
+                                                    "type": "string",
+                                                    "example": "+2348000000000"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/settings/general": {
             "post": {
                 "tags": [
-                    "Admin - Payment Method"
+                    "Admin - Settings"
                 ],
-                "summary": "Create a new payment method",
-                "operationId": "14407818574df6d5f25da48d5f8806b4",
+                "summary": "Update general settings",
+                "description": "Update general settings such as organization name, logo, contact email, and phone number.",
+                "operationId": "b80f67c675d5b9d7eee1dbe65bb3536b",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
-                                    "slug",
-                                    "logo",
-                                    "mode",
-                                    "is_active"
+                                    "organization_name",
+                                    "contact_email",
+                                    "phone_number"
                                 ],
                                 "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "slug": {
-                                        "type": "string"
+                                    "organization_name": {
+                                        "type": "string",
+                                        "example": "Comcin"
                                     },
                                     "logo": {
-                                        "type": "file"
-                                    },
-                                    "mode": {
+                                        "description": "Logo file (jpg, jpeg, png)",
                                         "type": "string",
-                                        "enum": [
-                                            "test",
-                                            "live"
-                                        ]
+                                        "format": "binary"
                                     },
-                                    "test_public_key": {
-                                        "type": "string"
-                                    },
-                                    "test_secret_key": {
-                                        "type": "string"
-                                    },
-                                    "live_public_key": {
-                                        "type": "string"
-                                    },
-                                    "live_secret_key": {
-                                        "type": "string"
-                                    },
-                                    "account_name": {
-                                        "type": "string"
-                                    },
-                                    "account_number": {
-                                        "type": "string"
-                                    },
-                                    "bank_name": {
-                                        "type": "string"
-                                    },
-                                    "currency": {
+                                    "contact_email": {
                                         "type": "string",
-                                        "default": "NGN"
+                                        "format": "email",
+                                        "example": "info@comcin.org"
                                     },
-                                    "is_active": {
-                                        "type": "boolean"
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "+2348000000000"
                                     }
                                 },
                                 "type": "object"
@@ -470,16 +1134,571 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Payment method created successfully",
+                    "200": {
+                        "description": "General settings updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "General settings updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "The given data was invalid."
                                         },
-                                        "payment_method": {
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/settings/security": {
+            "get": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Get Security Settings",
+                "description": "Retrieve current security settings (2FA, password length, alert on failed attempt).",
+                "operationId": "44d4cd617831d14f538ce1a0cc51e1b8",
+                "responses": {
+                    "200": {
+                        "description": "Security settings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "enable_2fa": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "min_password_length": {
+                                            "type": "integer",
+                                            "example": 8
+                                        },
+                                        "alert_on_failed_attempt": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Update Security Settings",
+                "description": "Update security preferences such as 2FA, password length, and failed attempt alerts.",
+                "operationId": "595a20c69e2f717b0f5816b43e21458e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "enable_2fa": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "min_password_length": {
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "alert_on_failed_attempt": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Security settings updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/settings/notifications": {
+            "get": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Get Notification Preferences",
+                "description": "Retrieve notification preferences such as new member alerts, payment confirmations, and compliance reminders.",
+                "operationId": "d7f8a7d570e2f6eeecbfc49729a6c358",
+                "responses": {
+                    "200": {
+                        "description": "Notification preferences retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "new_member": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "payment_confirmation": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "compliance_reminder": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Update Notification Preferences",
+                "description": "Update preferences for receiving system notifications.",
+                "operationId": "916b91844a65965577e84e8883360f7b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "new_member": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "payment_confirmation": {
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "compliance_reminder": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notification preferences updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/settings/super-admin": {
+            "get": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Get Super Admin Settings",
+                "description": "Retrieve Super Admin details like profile picture, email, and password update settings.",
+                "operationId": "625717cf18bda09fd6d669863bfc08e2",
+                "responses": {
+                    "200": {
+                        "description": "Super Admin settings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "profile_picture": {
+                                            "type": "string",
+                                            "example": "uploads/profile/admin123.png"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "admin@example.com"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Settings"
+                ],
+                "summary": "Update Super Admin Settings",
+                "description": "Update Super Admin profile picture, email, or password.",
+                "operationId": "0b742c9bb631acbc0ba6c1d3db3f0131",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "profile_picture": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "newadmin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "NewPassword123!"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "NewPassword123!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Super Admin settings updated successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/support-tickets": {
+            "get": {
+                "tags": [
+                    "Admin - Support Tickets"
+                ],
+                "summary": "Get all support tickets with stats",
+                "description": "Retrieve all support tickets with pagination and statistics (counts and weekly growth).",
+                "operationId": "4c43bc31f3c79d36c4eb8a0dbb9bc7e4",
+                "responses": {
+                    "200": {
+                        "description": "Support tickets retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support tickets retrieved successfully"
+                                        },
+                                        "stats": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 120
+                                                },
+                                                "resolved": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "pending": {
+                                                    "type": "integer",
+                                                    "example": 60
+                                                },
+                                                "cancelled": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "growth": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "resolved": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pending": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "cancelled": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/support-tickets/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Support Tickets"
+                ],
+                "summary": "View a single support ticket",
+                "description": "Retrieve details of a specific support ticket by ID",
+                "operationId": "06370e29a0ca5ea13a6c922fc9cd74f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Support ticket ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Support ticket retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support ticket retrieved successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Login issue"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "I cannot login to my account"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "pending"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-08-15T12:34:56Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-08-16T08:45:23Z"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "johndoe@example.com"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Support ticket not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Support] 1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/support-tickets/{id}/action": {
+            "post": {
+                "tags": [
+                    "Admin - Support Tickets"
+                ],
+                "summary": "Approve or Reject a Support Ticket",
+                "description": "Allows an admin to approve or reject a support ticket. No rejection reason is required.",
+                "operationId": "e555e45033daa630d34b132054749c76",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Support Ticket ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "action"
+                                ],
+                                "properties": {
+                                    "action": {
+                                        "description": "Action to perform on the ticket",
+                                        "type": "string",
+                                        "enum": [
+                                            "approve",
+                                            "reject"
+                                        ],
+                                        "example": "approve"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ticket approved successfully."
+                                        },
+                                        "ticket": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "approved"
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
@@ -489,7 +1708,52 @@
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "Invalid action",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid action provided."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ticket not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Support ticket not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -497,6 +1761,842 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/v1/admin/testimonials": {
+            "get": {
+                "tags": [
+                    "Admin - Testimonials"
+                ],
+                "summary": "Get all testimonials (admin only)",
+                "operationId": "558e17bc65bf8f678b82d0cb52664fcf",
+                "responses": {
+                    "200": {
+                        "description": "List of testimonials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Testimonials retrieved successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Testimonial"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Testimonials"
+                ],
+                "summary": "Create a new testimonial (admin only)",
+                "operationId": "900ddbe6962bc9524dda5a96dc24b0eb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "author_name",
+                                    "author_email",
+                                    "rating",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "author_name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "author_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane@example.com"
+                                    },
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Great experience working with this team."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Testimonial created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Testimonial"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/testimonials/{id}": {
+            "delete": {
+                "tags": [
+                    "Admin - Testimonials"
+                ],
+                "summary": "Delete a testimonial (admin only)",
+                "operationId": "e3457b1e7704d135825b6dd0db157730",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the testimonial",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Testimonial deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Testimonial deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/testimonials/{id}/publish": {
+            "patch": {
+                "tags": [
+                    "Admin - Testimonials"
+                ],
+                "summary": "Publish a testimonial (admin only)",
+                "operationId": "098675394d231ed55048f04436983fc2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the testimonial",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Testimonial published successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Testimonial"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/members": {
+            "get": {
+                "tags": [
+                    "Admin - Members"
+                ],
+                "summary": "Get all members except the first",
+                "description": "Fetches a paginated list of all members.",
+                "operationId": "f142a84269882d3a48d91ce76179d220",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of members retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "member@example.com"
+                                                    },
+                                                    "role": {
+                                                        "type": "string",
+                                                        "example": "member"
+                                                    },
+                                                    "is_active": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 42
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Members"
+                ],
+                "summary": "Create a new member",
+                "description": "Creates a new member with name, email, password, and role.",
+                "operationId": "fa209ab8723b18d3d0c761c5426bb977",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "jane@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "member"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Admin created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Jane Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "jane@example.com"
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "member"
+                                        },
+                                        "is_active": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/members/{id}": {
+            "put": {
+                "tags": [
+                    "Admin - Members"
+                ],
+                "summary": "Update an member",
+                "description": "Updates an member’s details such as name, email, password, role, or status.",
+                "operationId": "1206a274633f6ecbbd0fe6598f1f04e4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Admin ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "jane_new@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "member"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Admin updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Jane Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "jane_new@example.com"
+                                        },
+                                        "role": {
+                                            "type": "string",
+                                            "example": "member"
+                                        },
+                                        "is_active": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Admin not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Members"
+                ],
+                "summary": "Delete an member",
+                "description": "Permanently delete an member by ID.",
+                "operationId": "530eb8d5a8f5fde516db8e60e819f09c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the member to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/members/{id}/deactivate": {
+            "patch": {
+                "tags": [
+                    "Admin - Members"
+                ],
+                "summary": "Deactivate an member",
+                "description": "Mark an member as inactive instead of deleting.",
+                "operationId": "275115b9604c87a2d915a63b4af925b5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the member to deactivate",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Admin deactivated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin deactivated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Admin not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Admin not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/admin/website-content": {
+            "get": {
+                "tags": [
+                    "Admin - Website Content"
+                ],
+                "summary": "Get all website content",
+                "description": "Fetch all website content entries.",
+                "operationId": "10d2b108e59c5ea3644210729211b001",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/WebsiteContent"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin - Website Content"
+                ],
+                "summary": "Create website content",
+                "description": "Create a new website content entry with optional media upload",
+                "operationId": "cdd48f3eeb3ab0826b557f01a185d2ec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "section",
+                                    "key",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "section": {
+                                        "type": "string",
+                                        "example": "homepage"
+                                    },
+                                    "key": {
+                                        "type": "string",
+                                        "example": "hero_title"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "example": "Welcome to our website"
+                                    },
+                                    "media": {
+                                        "description": "Optional media file",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Website content created successfully"
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/website-content/{section}/{key}": {
+            "get": {
+                "tags": [
+                    "Admin - Website Content"
+                ],
+                "summary": "Get website content by section and key",
+                "operationId": "0f3c28ab93c9184e39d7212c5a983502",
+                "parameters": [
+                    {
+                        "name": "section",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Website content retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "section": {
+                                            "type": "string"
+                                        },
+                                        "key": {
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "type": "string"
+                                        },
+                                        "media": {
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Content not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Admin - Website Content"
+                ],
+                "summary": "Update website content",
+                "description": "Update website content by section and key with optional media replacement",
+                "operationId": "79c3bfaa50ffe5c12f8db1d61a12866b",
+                "parameters": [
+                    {
+                        "name": "section",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "value": {
+                                        "type": "string",
+                                        "example": "Updated website title"
+                                    },
+                                    "media": {
+                                        "description": "Optional media file",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Website content updated successfully"
+                    },
+                    "404": {
+                        "description": "Content not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Website Content"
+                ],
+                "summary": "Delete website content",
+                "operationId": "bed17f722fbb054e08bdad77d511f003",
+                "parameters": [
+                    {
+                        "name": "section",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Website content deleted successfully"
+                    },
+                    "404": {
+                        "description": "Content not found"
+                    }
+                }
             }
         },
         "/api/v1/login": {
@@ -999,7 +3099,7 @@
         "/api/v1/member/dashboard": {
             "get": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
                 "summary": "Get Member Dashboard",
                 "description": "Fetches the member's dashboard data including user and institution information.",
@@ -1063,7 +3163,7 @@
         "/api/v1/member/institution": {
             "get": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
                 "summary": "Get Member Institution",
                 "description": "Fetches the institution information of the authenticated member.",
@@ -1097,16 +3197,158 @@
             }
         },
         "/api/v1/member/edit-institution": {
-            "get": {
+            "post": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
-                "summary": "Edit Member Institution",
-                "description": "Allows the authenticated member to edit their institution information.",
-                "operationId": "a2bca5a5ac8174448e3f7000ce39c621",
+                "summary": "Edit institution details",
+                "description": "Allows an authenticated user to edit and update their institution details along with uploading required files.",
+                "operationId": "faed8960f749ef54a2ef0b7b0f5e21be",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "institution_name",
+                                    "institution_type",
+                                    "date_of_establishment",
+                                    "registration_number",
+                                    "regulatory_body",
+                                    "operating_state",
+                                    "id_card",
+                                    "certificate_of_registration",
+                                    "operational_license",
+                                    "constitution"
+                                ],
+                                "properties": {
+                                    "institution_name": {
+                                        "type": "string",
+                                        "example": "ABC Microfinance Bank"
+                                    },
+                                    "institution_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Microfinance",
+                                            "Cooperative",
+                                            "Other"
+                                        ],
+                                        "example": "Microfinance"
+                                    },
+                                    "category_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "unit",
+                                            "state",
+                                            "federal"
+                                        ],
+                                        "example": "unit",
+                                        "nullable": true
+                                    },
+                                    "date_of_establishment": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-06-15"
+                                    },
+                                    "registration_number": {
+                                        "type": "string",
+                                        "example": "REG-12345"
+                                    },
+                                    "regulatory_body": {
+                                        "type": "string",
+                                        "example": "CBN"
+                                    },
+                                    "operating_state": {
+                                        "type": "string",
+                                        "example": "Lagos"
+                                    },
+                                    "head_office": {
+                                        "type": "string",
+                                        "example": "12 Broad Street, Lagos"
+                                    },
+                                    "business_operation_address": {
+                                        "type": "string",
+                                        "example": "45 Market Road, Lagos"
+                                    },
+                                    "website_url": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://abc-mfb.com"
+                                    },
+                                    "descriptions": {
+                                        "type": "string",
+                                        "example": "Leading provider of financial inclusion services"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "+2348012345678"
+                                    },
+                                    "institution_logo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "institution_banner": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "id_card": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "certificate_of_registration": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "operational_license": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "constitution": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "latest_annual_report": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "letter_of_intent": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "board_resolution": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "passport_photograph": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "other_supporting_document": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "membership_agreement": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "terms_agreement": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Successful update of institution information",
+                        "description": "Institution updated successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1116,7 +3358,7 @@
                                             "example": "Institution updated successfully"
                                         },
                                         "institution": {
-                                            "$ref": "#/components/schemas/Institution"
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -1124,17 +3366,8 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Validation error, invalid input data"
-                    },
-                    "404": {
-                        "description": "Institution not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized, user must be authenticated"
-                    },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Error updating institution"
                     }
                 },
                 "security": [
@@ -1147,7 +3380,7 @@
         "/api/v1/member/financials": {
             "get": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
                 "summary": "Get Member Financials",
                 "description": "Fetches the financial information of the authenticated member including pending and paid charges.",
@@ -1207,7 +3440,7 @@
         "/api/v1/member/certificates": {
             "get": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
                 "summary": "Get Member Certificates",
                 "description": "Fetches the certificates associated with the authenticated member.",
@@ -1246,7 +3479,7 @@
         "/api/v1/member/notifications": {
             "get": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
                 "summary": "Get Member Notifications",
                 "description": "Fetches the notifications for the authenticated member.",
@@ -1282,7 +3515,7 @@
         "/api/v1/member/notifications/mark-as-read": {
             "post": {
                 "tags": [
-                    "Member Dashboard"
+                    "Member  - Dashboard"
                 ],
                 "summary": "Mark Notification as Read",
                 "description": "Marks a notification as read for the authenticated member.",
@@ -1330,7 +3563,7 @@
         "/api/v1/member/payment": {
             "get": {
                 "tags": [
-                    "Member"
+                    "Member - Payments"
                 ],
                 "summary": "Get Payment Methods",
                 "description": "Fetches all active payment methods available for the member.",
@@ -1400,7 +3633,7 @@
         "/api/v1/member/payment/paystack/verify": {
             "post": {
                 "tags": [
-                    "Member"
+                    "Member - Payments"
                 ],
                 "summary": "Verify Paystack Payment",
                 "description": "Verifies a Paystack payment using the transaction reference.",
@@ -1508,7 +3741,7 @@
         "/api/v1/member/payment/manual": {
             "post": {
                 "tags": [
-                    "Member"
+                    "Member - Payments"
                 ],
                 "summary": "Record Manual Payment",
                 "description": "Records a manual payment made by the member.",
@@ -1659,7 +3892,7 @@
         "/api/v1/member/support/tickets": {
             "get": {
                 "tags": [
-                    "Member"
+                    "Member - Support Tickets"
                 ],
                 "summary": "Get All Support Tickets",
                 "description": "Retrieves all support tickets for the authenticated member.",
@@ -1680,7 +3913,7 @@
             },
             "post": {
                 "tags": [
-                    "Member"
+                    "Member - Support Tickets"
                 ],
                 "summary": "Create Support Ticket",
                 "description": "Creates a new support ticket for the authenticated member.",
@@ -1734,7 +3967,7 @@
         "/api/v1/member/support/tickets/{uuid}": {
             "get": {
                 "tags": [
-                    "Member"
+                    "Member - Support Tickets"
                 ],
                 "summary": "Get Support Ticket",
                 "description": "Retrieves a specific support ticket by UUID for the authenticated member.",
@@ -1954,6 +4187,10 @@
                     "institution_logo": {
                         "type": "string",
                         "example": "uploads/institutions/uuid/logo.png"
+                    },
+                    "institution_banner": {
+                        "type": "string",
+                        "example": "uploads/institutions/uuid/banner.png"
                     },
                     "certificate_of_registration": {
                         "type": "string",
@@ -2285,6 +4522,61 @@
                 },
                 "type": "object"
             },
+            "Testimonial": {
+                "title": "Testimonial",
+                "description": "A user testimonial entry",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "example": 1
+                    },
+                    "author_name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "author_email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "johndoe@example.com",
+                        "nullable": true
+                    },
+                    "rating": {
+                        "description": "Rating value from 1 to 5",
+                        "type": "integer",
+                        "format": "int32",
+                        "maximum": 5,
+                        "minimum": 1,
+                        "example": 5
+                    },
+                    "description": {
+                        "description": "The testimonial content",
+                        "type": "string",
+                        "example": "This platform has really improved my workflow!"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "draft",
+                            "published"
+                        ],
+                        "example": "published"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "example": "2025-08-16T12:45:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "example": "2025-08-16T12:55:00Z"
+                    }
+                },
+                "type": "object"
+            },
             "Transaction": {
                 "required": [
                     "member_id",
@@ -2410,6 +4702,42 @@
                     }
                 },
                 "type": "object"
+            },
+            "WebsiteContent": {
+                "title": "Website Content",
+                "required": [
+                    "section",
+                    "key",
+                    "value"
+                ],
+                "properties": {
+                    "section": {
+                        "type": "string",
+                        "example": "homepage"
+                    },
+                    "key": {
+                        "type": "string",
+                        "example": "hero_title"
+                    },
+                    "value": {
+                        "type": "string",
+                        "example": "Welcome to our website"
+                    },
+                    "media": {
+                        "type": "string",
+                        "example": "uploads/website/hero_banner.png",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -2427,12 +4755,12 @@
             "description": "Authentication related endpoints"
         },
         {
-            "name": "Member",
-            "description": "Member related endpoints"
+            "name": "Admin - Admins",
+            "description": "Admin - Admins"
         },
         {
-            "name": "Admin Dashboard",
-            "description": "Admin Dashboard"
+            "name": "Admin - Dashboard",
+            "description": "Admin - Dashboard"
         },
         {
             "name": "Admin - Applications",
@@ -2447,8 +4775,36 @@
             "description": "Admin - Payment Method"
         },
         {
-            "name": "Member Dashboard",
-            "description": "Member Dashboard"
+            "name": "Admin - Settings",
+            "description": "Admin - Settings"
+        },
+        {
+            "name": "Admin - Support Tickets",
+            "description": "Admin - Support Tickets"
+        },
+        {
+            "name": "Admin - Testimonials",
+            "description": "Admin - Testimonials"
+        },
+        {
+            "name": "Admin - Members",
+            "description": "Admin - Members"
+        },
+        {
+            "name": "Admin - Website Content",
+            "description": "Admin - Website Content"
+        },
+        {
+            "name": "Member  - Dashboard",
+            "description": "Member  - Dashboard"
+        },
+        {
+            "name": "Member - Payments",
+            "description": "Member - Payments"
+        },
+        {
+            "name": "Member - Support Tickets",
+            "description": "Member - Support Tickets"
         }
     ]
 }

@@ -1,7 +1,13 @@
 <?php
 
+use App\Http\Controllers\API\V1\Admin\AdminController;
 use App\Http\Controllers\API\V1\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\API\V1\Admin\PaymentMethodController as AdminPaymentMethodController;
+use App\Http\Controllers\API\V1\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\API\V1\Admin\SupportController as AdminSupportController;
+use App\Http\Controllers\API\V1\Admin\TestimonialController as AdminTestimonialController;
+use App\Http\Controllers\API\V1\Admin\UserController as MemberUserController;
+use App\Http\Controllers\API\V1\Admin\WebsiteContentController;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\API\V1\Member\PaymentController as MemberPaymentController;
@@ -9,10 +15,6 @@ use App\Http\Controllers\API\V1\Member\SupportController as MemberSupportControl
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
 
@@ -37,20 +39,53 @@ Route::prefix('v1')->group(function () {
 
             Route::get('dashboard', [AdminDashboardController::class, 'index']);
             Route::apiResource('payment-methods', AdminPaymentMethodController::class);
+            Route::apiResource('admins', AdminController::class);
+            Route::apiResource('members', MemberUserController::class);
+            Route::patch('admins/{id}/deactivate', [AdminController::class, 'deactivate']);
 
             Route::get('memberships', [AdminDashboardController::class, 'memberships']);
             Route::get('institutions', [AdminDashboardController::class, 'institutions']);
-            Route::get('applications', [AdminDashboardController::class, 'applications']);
             Route::get('notifications/{userId}', [AdminDashboardController::class, 'notifications']);
-
+            
+            Route::get('applications/{userId}', [AdminDashboardController::class, 'application']);
             // approveOrRejectApplication
-            Route::post('applications/{user_id}/action"', [AdminDashboardController::class, 'approveOrRejectApplication']);
+            Route::post('applications/{user_id}/action', [AdminDashboardController::class, 'approveOrRejectApplication']);
+
+            //Website content links
+            Route::group(['prefix' => 'website-content',], function () {
+                Route::get('/', [WebsiteContentController::class, 'index']);
+                Route::post('/', [WebsiteContentController::class, 'store']);
+                Route::get('{section}/{key}', [WebsiteContentController::class, 'show']);
+                Route::put('{section}/{key}', [WebsiteContentController::class, 'update']);
+                Route::delete('{section}/{key}', [WebsiteContentController::class, 'destroy']);
+            });
+
+            //Suport Ticket Links
+            Route::group(['prefix' => 'support-tickets',], function () {
+                Route::get('/', [AdminSupportController::class, 'index']);
+                Route::get('{id}', [AdminSupportController::class, 'show']);
+                Route::post('{id}/action', [AdminSupportController::class, 'approveOrRejectTicket']);
+            });
+
+            Route::group(['prefix' => 'testimonials',], function () {
+                Route::get('/', [AdminTestimonialController::class, 'index']);
+                Route::get('{id}', [AdminTestimonialController::class, 'show']);
+                Route::delete('{id}', [WebsiteContentController::class, 'destroy']);
+                Route::post('{id}/publish', [AdminTestimonialController::class, 'publish']);
+            });
+
+            Route::prefix('settings')->middleware(['auth', 'admin'])->group(function () {
+                Route::match(['get', 'post'], '/general', [AdminSettingsController::class, 'updateGeneral']);
+                Route::match(['get', 'post'], '/security', [AdminSettingsController::class, 'updateSecurity']);
+                Route::match(['get', 'post'], '/notifications', [AdminSettingsController::class, 'updateNotifications']);
+                Route::match(['get', 'post'], '/super-admin', [AdminSettingsController::class, 'updateSuperAdmin']);
+            });
         });
 
 
         // Member routes
         Route::group(['prefix' => 'member', 'middleware' => ['auth:sanctum', 'member']], function () {
-            
+
             Route::get('dashboard', [MemberDashboardController::class, 'index']);
             Route::get('institution', [MemberDashboardController::class, 'institution']);
             Route::post('edit-institution', [MemberDashboardController::class, 'editInstitution']);
@@ -70,8 +105,6 @@ Route::prefix('v1')->group(function () {
             Route::get('support/tickets', [MemberSupportController::class, 'getAllSupportTickets']);
             Route::post('support/tickets', [MemberSupportController::class, 'createSupportTicket']);
             Route::get('support/tickets/{uuid}', [MemberSupportController::class, 'getSupportTicket']);
-
-
         });
     });
 });

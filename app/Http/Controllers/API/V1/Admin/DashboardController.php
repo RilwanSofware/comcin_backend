@@ -20,7 +20,7 @@ class DashboardController extends Controller
      *     path="/api/v1/admin/dashboard",
      *    operationId="getDashboardData",
      *    summary="Get admin dashboard data",
-     *    tags={"Admin Dashboard"},
+     *    tags={"Admin - Dashboard"},
      *    security={{"bearerAuth":{}}},
      *    @OA\Response(response=200, description="Dashboard data retrieved successfully"),
      *    @OA\Response(response=500, description="Internal server error")
@@ -138,7 +138,7 @@ class DashboardController extends Controller
      *      path="/api/v1/admin/memberships",
      *      operationId="getMembershipData",
      *      summary="Get admin membership data",
-     *      tags={"Admin Dashboard"},
+     *      tags={"Admin - Dashboard"},
      *      security={{"bearerAuth":{}}},
      *      @OA\Response(response=200, description="Membership data retrieved successfully"),
      *      @OA\Response(response=500, description="Internal server error")
@@ -242,7 +242,7 @@ class DashboardController extends Controller
      *     path="/api/v1/admin/institutions",
      *     operationId="getInstitutionData",
      *     summary="Get admin institution data",
-     *     tags={"Admin Dashboard"},
+     *     tags={"Admin - Dashboard"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(response=200, description="Institution data retrieved successfully"),
      *     @OA\Response(response=500, description="Internal server error")
@@ -414,22 +414,26 @@ class DashboardController extends Controller
 
         try {
             $user = User::findOrFail($user_id);
+            $institution = Institution::where('user_id', $user->id)->first();
 
             if ($request->action === 'approve') {
                 $user->is_approved = 1; // 1 means approved
-                $user->status = 'approved'; // Update status to approved
-                $user->rejection_reason = null;
+                $institution->is_approved = 1;
+                $institution->status = 'approved'; // Update status to approved
+                $institution->rejection_reason = null;
                 $message = 'Application approved successfully.';
                 $adminMessage = "You approved {$user->name}'s application.";
             } else {
-                $user->is_approved = 0; 
-                $user->status = 'rejected'; // Update status to rejected
-                $user->rejection_reason = $request->rejection_reason ?? 'No reason provided';
+                $user->is_approved = 0;
+                $institution->is_approved = 0;
+                $institution->status = 'rejected'; // Update status to rejected
+                $institution->rejection_reason = $request->rejection_reason ?? 'No reason provided';
                 $message = 'Application rejected successfully.';
                 $adminMessage = "You rejected {$user->name}'s application.";
             }
 
             $user->save();
+            $institution->save();
 
             // Store notification for the user
             store_notification(
@@ -462,6 +466,165 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
+
+    //Admin Financials Dashboard
+    /**
+     * @OA\Get(
+     *     path="/api/v1/admin/financials",
+     *     summary="Get financial statistics",
+     *     description="Returns key financial metrics such as total revenue, levies, pending dues, success rate, and monthly revenue trends.",
+     *     tags={"Admin - Dashboard"},
+     *     security={{"bearerAuth": {}}},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Financial statistics retrieved successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="total_revenue", type="number", format="float", example=150000),
+     *             @OA\Property(property="total_levies", type="number", format="float", example=45000),
+     *             @OA\Property(property="pending_dues", type="number", format="float", example=25000),
+     *             @OA\Property(property="succesful_payment_count", type="integer", example=120),
+     *             @OA\Property(property="total_transaction_count", type="integer", example=150),
+     *             @OA\Property(property="percentage_success_rate", type="number", format="float", example=80.0),
+     *             @OA\Property(property="percentage_total_revenue", type="number", format="float", example=15.5),
+     *             @OA\Property(property="percentage_total_levies", type="number", format="float", example=12.3),
+     *             @OA\Property(property="percentage_pending_dues", type="number", format="float", example=-5.2),
+     *             @OA\Property(
+     *                 property="monthly_revenue",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="month", type="string", example="2025-03"),
+     *                     @OA\Property(property="total", type="number", format="float", example=30000)
+     *                 )
+     *             ),
+     *            @OA\Property(property="all_charges", type="array", @OA\Items(ref="#/components/schemas/Charges")),
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error"
+     *     )
+     * )
+     */
+    public function financials()
+    {
+        try {
+            // ====== Date Ranges for Percentage Increase ======
+            $twoMonthsAgoStart = now()->subMonths(2)->startOfMonth();
+            $twoMonthsAgoEnd   = now()->subMonths(2)->endOfMonth();
+            $lastMonthStart    = now()->subMonth()->startOfMonth();
+            $lastMonthEnd      = now()->subMonth()->endOfMonth();
+
+            // ====== Totals ======
+            $total_revenue = Transaction::where('status', 'successful')->sum('amount');
+            $total_levies  = Charges::where('type', 'levy')->where('status', 'paid')->sum('amount');
+            $pending_dues  = Charges::where('type', 'due')->where('status', 'unpaid')->sum('amount');
+
+            // ====== Counts ======
+            $succesful_payment_count = Transaction::where('status', 'successful')->count();
+            $total_transaction_count = Transaction::count();
+
+            // ====== Percentages ======
+            $percentage_success_rate = $total_transaction_count > 0
+                ? round(($succesful_payment_count / $total_transaction_count) * 100, 2)
+                : 0;
+
+            // Compare last month vs two months ago
+            $revenue_last_month = Transaction::where('status', 'successful')
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('amount');
+
+            $revenue_two_months_ago = Transaction::where('status', 'successful')
+                ->whereBetween('created_at', [$twoMonthsAgoStart, $twoMonthsAgoEnd])
+                ->sum('amount');
+
+            $levies_last_month = Charges::where('type', 'levy')->where('status', 'paid')
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('amount');
+
+            $levies_two_months_ago = Charges::where('type', 'levy')->where('status', 'paid')
+                ->whereBetween('created_at', [$twoMonthsAgoStart, $twoMonthsAgoEnd])
+                ->sum('amount');
+
+            $dues_last_month = Charges::where('type', 'due')->where('status', 'unpaid')
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('amount');
+
+            $dues_two_months_ago = Charges::where('type', 'due')->where('status', 'unpaid')
+                ->whereBetween('created_at', [$twoMonthsAgoStart, $twoMonthsAgoEnd])
+                ->sum('amount');
+
+            // Percentage changes
+            $percentage_total_revenue = $revenue_two_months_ago > 0
+                ? round((($revenue_last_month - $revenue_two_months_ago) / $revenue_two_months_ago) * 100, 2)
+                : 0;
+
+            $percentage_total_levies = $levies_two_months_ago > 0
+                ? round((($levies_last_month - $levies_two_months_ago) / $levies_two_months_ago) * 100, 2)
+                : 0;
+
+            $percentage_pending_dues = $dues_two_months_ago > 0
+                ? round((($dues_last_month - $dues_two_months_ago) / $dues_two_months_ago) * 100, 2)
+                : 0;
+
+            // ====== Graph Data for last 5 months ======
+            $graph_data = [];
+            for ($i = 4; $i >= 0; $i--) {
+                $monthStart = now()->subMonths($i)->startOfMonth();
+                $monthEnd   = now()->subMonths($i)->endOfMonth();
+                $label      = $monthStart->format('M Y');
+
+                $graph_data[] = [
+                    'month'      => $label,
+                    'revenue'    => Transaction::where('status', 'successful')
+                        ->whereBetween('created_at', [$monthStart, $monthEnd])
+                        ->sum('amount'),
+                    'levies'     => Charges::where('type', 'levy')->where('status', 'paid')
+                        ->whereBetween('created_at', [$monthStart, $monthEnd])
+                        ->sum('amount'),
+                    'pending_dues' => Charges::where('type', 'due')->where('status', 'unpaid')
+                        ->whereBetween('created_at', [$monthStart, $monthEnd])
+                        ->sum('amount'),
+                ];
+            }
+
+            $all_charges = Charges::paginate(10);
+
+            return response()->json([
+                'totals' => [
+                    'total_revenue' => $total_revenue,
+                    'total_levies'  => $total_levies,
+                    'pending_dues'  => $pending_dues,
+                ],
+                'counts' => [
+                    'successful_payments' => $succesful_payment_count,
+                    'total_transactions'  => $total_transaction_count,
+                ],
+                'percentages' => [
+                    'success_rate'        => $percentage_success_rate,
+                    'total_revenue'       => $percentage_total_revenue,
+                    'total_levies'        => $percentage_total_levies,
+                    'pending_dues'        => $percentage_pending_dues,
+                ],
+                'graph_data' => $graph_data,
+                'all_charges' => $all_charges
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Error fetching financials',
+                'error'   => $th->getMessage(),
+            ], 500);
+        }
+    }
+
 
     /**
      * @OA\Get(

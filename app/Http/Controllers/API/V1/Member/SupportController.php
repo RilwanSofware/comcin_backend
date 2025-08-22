@@ -17,7 +17,7 @@ class SupportController extends Controller
      *   path="/api/v1/member/support/tickets",
      *   summary="Get All Support Tickets",
      *   description="Retrieves all support tickets for the authenticated member.",
-     *   tags={"Member"},
+     *   tags={"Member - Support Tickets"},
      *   security={{"bearerAuth": {}}},
      *   @OA\Response(
      *       response=200,
@@ -40,14 +40,13 @@ class SupportController extends Controller
         return response()->json($supportTickets, 200);
     }
 
-
     //create a support ticket
     /**
      * @OA\Post(
      *   path="/api/v1/member/support/tickets",
      *   summary="Create Support Ticket",
      *   description="Creates a new support ticket for the authenticated member.",
-     *   tags={"Member"},
+     *   tags={"Member - Support Tickets"},
      *  security={{"bearerAuth": {}}},
      *  @OA\RequestBody(
      *      required=true,
@@ -129,7 +128,7 @@ class SupportController extends Controller
      *  path="/api/v1/member/support/tickets/{uuid}",
      * summary="Get Support Ticket",
      * description="Retrieves a specific support ticket by UUID for the authenticated member.",
-     * tags={"Member"},
+     * tags={"Member - Support Tickets"},
      * security={{"bearerAuth": {}}},
      * @OA\Parameter(
      *     name="uuid",

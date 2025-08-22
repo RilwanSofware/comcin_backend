@@ -62,7 +62,7 @@ class PaymentMethodController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/payment-methods",
+     *     path="/api/v1/admin/payment-methods",
      *     summary="Create a new payment method",
      *     tags={"Admin - Payment Method"},
      *     security={{"bearerAuth":{}}},

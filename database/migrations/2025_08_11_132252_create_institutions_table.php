@@ -21,13 +21,14 @@ return new class extends Migration
             // Basic details
             $table->string('institution_name')->nullable();
             $table->enum('institution_type', ['Microfinance', 'Cooperative', 'Other'])->nullable();
-            $table->enum('category_type', ['unit','state', 'federal'])->nullable(); // You can adjust types
+            $table->enum('category_type', ['unit', 'state', 'federal'])->nullable(); // You can adjust types
             $table->date('date_of_establishment')->nullable();
             $table->string('registration_number')->nullable();
             $table->string('regulatory_body')->nullable();
             $table->string('operating_state')->nullable();
             $table->string('institution_logo')->nullable();
-
+            $table->string('institution_banner')->nullable();
+            
             // Uploads
             $table->string('certificate_of_registration')->nullable();
             $table->string('operational_license')->nullable();

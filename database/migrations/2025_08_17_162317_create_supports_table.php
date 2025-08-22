@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('uuid')->unique();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('subject');
             $table->longText('message');
             $table->enum('status', ['pending', 'resolved', 'cancelled'])->default('pending');

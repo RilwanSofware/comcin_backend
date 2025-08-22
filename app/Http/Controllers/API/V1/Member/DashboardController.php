@@ -25,7 +25,7 @@ class DashboardController extends Controller
      *   path="/api/v1/member/dashboard",
      *  summary="Get Member Dashboard",
      *  description="Fetches the member's dashboard data including user and institution information.",
-     *  tags={"Member Dashboard"},
+     *  tags={"Member  - Dashboard"},
      *  security={{"bearerAuth":{}}},
      *  @OA\Response(
      *     response=200,
@@ -99,7 +99,7 @@ class DashboardController extends Controller
      *   path="/api/v1/member/institution",
      *  summary="Get Member Institution",
      *  description="Fetches the institution information of the authenticated member.",
-     *  tags={"Member Dashboard"},
+     *  tags={"Member  - Dashboard"},
      *  security={{"bearerAuth":{}}},
      *  @OA\Response(
      *     response=200,
@@ -133,39 +133,66 @@ class DashboardController extends Controller
     }
 
     /**
-     * @OA\Get(
-     * path="/api/v1/member/edit-institution",
-     * summary="Edit Member Institution",
-     * description="Allows the authenticated member to edit their institution information.",
-     * tags={"Member Dashboard"},
-     * security={{"bearerAuth":{}}},
-     * @OA\Response(
-     *     response=200,
-     *     description="Successful update of institution information",
-     *    @OA\JsonContent(
-     *      type="object",
-     *     @OA\Property(property="message", type="string", example="Institution updated successfully"),
-     *     @OA\Property(property="institution", type="object", ref="#/components/schemas/Institution")
-     *    )
-     * ),
-     * @OA\Response(
-     *     response=400,
-     *     description="Validation error, invalid input data"
-     * ),
-     * @OA\Response(
-     *     response=404,
-     *    description="Institution not found"
-     * ),
-     * @OA\Response(
-     *     response=401,
-     *     description="Unauthorized, user must be authenticated"
-     * ),
-     * @OA\Response(
-     *     response=500,
-     *     description="Internal server error"
-     * )
+     * @OA\Post(
+     *     path="/api/v1/member/edit-institution",
+     *     tags={"Member  - Dashboard"},
+     *     summary="Edit institution details",
+     *     description="Allows an authenticated user to edit and update their institution details along with uploading required files.",
+     *     security={{"bearerAuth": {}}},
+     * 
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"institution_name","institution_type","date_of_establishment","registration_number","regulatory_body","operating_state","id_card","certificate_of_registration","operational_license","constitution"},
+     *                 @OA\Property(property="institution_name", type="string", example="ABC Microfinance Bank"),
+     *                 @OA\Property(property="institution_type", type="string", enum={"Microfinance","Cooperative","Other"}, example="Microfinance"),
+     *                 @OA\Property(property="category_type", type="string", enum={"unit","state","federal"}, nullable=true, example="unit"),
+     *                 @OA\Property(property="date_of_establishment", type="string", format="date", example="2010-06-15"),
+     *                 @OA\Property(property="registration_number", type="string", example="REG-12345"),
+     *                 @OA\Property(property="regulatory_body", type="string", example="CBN"),
+     *                 @OA\Property(property="operating_state", type="string", example="Lagos"),
+     *                 @OA\Property(property="head_office", type="string", example="12 Broad Street, Lagos"),
+     *                 @OA\Property(property="business_operation_address", type="string", example="45 Market Road, Lagos"),
+     *                 @OA\Property(property="website_url", type="string", format="url", example="https://abc-mfb.com"),
+     *                 @OA\Property(property="descriptions", type="string", example="Leading provider of financial inclusion services"),
+     *                 @OA\Property(property="phone_number", type="string", example="+2348012345678"),
+     *                 
+     *                 @OA\Property(property="institution_logo", type="string", format="binary"),
+     *                 @OA\Property(property="institution_banner", type="string", format="binary"),
+     *                 @OA\Property(property="id_card", type="string", format="binary"),
+     *                 @OA\Property(property="certificate_of_registration", type="string", format="binary"),
+     *                 @OA\Property(property="operational_license", type="string", format="binary"),
+     *                 @OA\Property(property="constitution", type="string", format="binary"),
+     *                 @OA\Property(property="latest_annual_report", type="string", format="binary", nullable=true),
+     *                 @OA\Property(property="letter_of_intent", type="string", format="binary", nullable=true),
+     *                 @OA\Property(property="board_resolution", type="string", format="binary", nullable=true),
+     *                 @OA\Property(property="passport_photograph", type="string", format="binary", nullable=true),
+     *                 @OA\Property(property="other_supporting_document", type="string", format="binary", nullable=true),
+     * 
+     *                 @OA\Property(property="membership_agreement", type="boolean", example=true),
+     *                 @OA\Property(property="terms_agreement", type="boolean", example=true)
+     *             )
+     *         )
+     *     ),
+     * 
+     *     @OA\Response(
+     *         response=200,
+     *         description="Institution updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Institution updated successfully"),
+     *             @OA\Property(property="institution", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error updating institution"
+     *     )
      * )
      */
+
 
     public function editInstitution(Request $request)
     {
@@ -198,6 +225,8 @@ class DashboardController extends Controller
 
                 // Files
                 'institution_logo' => 'nullable|file|mimes:jpeg,png',
+                'institution_banner' => 'nullable|file|mimes:jpeg,png',
+
                 'certificate_of_registration' => 'required|file|mimes:pdf,jpeg,png',
                 'operational_license' => 'required|file|mimes:pdf,jpeg,png',
                 'constitution' => 'required|file|mimes:pdf,jpeg,png',
@@ -215,6 +244,7 @@ class DashboardController extends Controller
             $paths = [];
             $fileFields = [
                 'institution_logo' => 'logo.png',
+                'institution_banner' => 'banner.png',
                 'certificate_of_registration' => 'certificate.pdf',
                 'operational_license' => 'license.pdf',
                 'constitution' => 'constitution.pdf',
@@ -247,6 +277,7 @@ class DashboardController extends Controller
                 'regulatory_body' => $request->regulatory_body,
                 'operating_state' => $request->operating_state,
                 'institution_logo' => $paths['institution_logo'],
+                'institution_banner'  => $paths['institution_banner'],
                 'id_card' => $paths['id_card'],
                 'certificate_of_registration' => $paths['certificate_of_registration'],
                 'operational_license' => $paths['operational_license'],
@@ -285,7 +316,7 @@ class DashboardController extends Controller
      *   path="/api/v1/member/financials",
      *  summary="Get Member Financials",
      *  description="Fetches the financial information of the authenticated member including pending and paid charges.",
-     *  tags={"Member Dashboard"},
+     *  tags={"Member  - Dashboard"},
      *  security={{"bearerAuth":{}}},
      *  @OA\Response(
      *     response=200,
@@ -345,7 +376,7 @@ class DashboardController extends Controller
      *  path="/api/v1/member/certificates",
      * summary="Get Member Certificates",
      * description="Fetches the certificates associated with the authenticated member.",
-     * tags={"Member Dashboard"},
+     * tags={"Member  - Dashboard"},
      * security={{"bearerAuth":{}}},
      * @OA\Response(
      *     response=200,
@@ -386,7 +417,7 @@ class DashboardController extends Controller
      * path="/api/v1/member/notifications",
      * summary="Get Member Notifications",
      * description="Fetches the notifications for the authenticated member.",
-     * tags={"Member Dashboard"},
+     * tags={"Member  - Dashboard"},
      * security={{"bearerAuth":{}}},
      * @OA\Response(
      *     response=200,
@@ -420,7 +451,7 @@ class DashboardController extends Controller
      * path="/api/v1/member/notifications/mark-as-read",
      * summary="Mark Notification as Read",
      * description="Marks a notification as read for the authenticated member.",
-     * tags={"Member Dashboard"},
+     * tags={"Member  - Dashboard"},
      * security={{"bearerAuth":{}}},
      * @OA\RequestBody(
      *     required=true,

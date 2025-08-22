@@ -29,10 +29,6 @@ use Illuminate\Support\Facades\Log;
     *     name="Admin",
     *     description="Admin related endpoints"
  * ),
- * @OA\Tag(
- *     name="Member",
- *     description="Member related endpoints"
- * ),
  * @OA\SecurityScheme(
  *     securityScheme="bearerAuth",
  *     type="http",
@@ -312,7 +308,7 @@ class AuthController extends Controller
                 'operating_state' => 'required|string',
                 'head_office' => 'nullable|string',
                 'business_operation_address' => 'nullable|string',
-                'website_url' => 'nullable|url',
+                'website_url' => 'nullable|string',
                 'descriptions' => 'nullable|string',
 
                 // Representative

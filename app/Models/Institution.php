@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  *     @OA\Property(property="descriptions", type="string", example="A cooperative offering microfinance services."),
  *
  *     @OA\Property(property="institution_logo", type="string", example="uploads/institutions/uuid/logo.png"),
+ *     @OA\Property(property="institution_banner", type="string", example="uploads/institutions/uuid/banner.png"),
+ * 
  *     @OA\Property(property="certificate_of_registration", type="string", example="uploads/institutions/uuid/certificate.pdf"),
  *     @OA\Property(property="operational_license", type="string", example="uploads/institutions/uuid/license.pdf"),
  *     @OA\Property(property="constitution", type="string", example="uploads/institutions/uuid/constitution.pdf"),
@@ -58,6 +60,7 @@ class Institution extends Model
         'regulatory_body',
         'operating_state',
         'institution_logo',
+        'institution_banner',
         'head_office',
         'business_operation_address',
         'website_url',
