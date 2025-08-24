@@ -2796,7 +2796,7 @@
                                     "id_card",
                                     "certificate_of_registration",
                                     "operational_license",
-                                    "constitution",
+                                    "payment_receipt",
                                     "membership_agreement",
                                     "terms_agreement"
                                 ],
@@ -2893,6 +2893,10 @@
                                         "type": "string",
                                         "format": "binary"
                                     },
+                                    "institution_logo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
                                     "certificate_of_registration": {
                                         "type": "string",
                                         "format": "binary"
@@ -2922,6 +2926,11 @@
                                         "format": "binary"
                                     },
                                     "other_supporting_document": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "payment_receipt": {
+                                        "description": "Optional payment receipt upload",
                                         "type": "string",
                                         "format": "binary"
                                     },

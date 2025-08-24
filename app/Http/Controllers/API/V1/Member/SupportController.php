@@ -87,7 +87,7 @@ class SupportController extends Controller
         DB::beginTransaction();
         try {
             // Handle file upload
-            $attachmentPath = 'uploads/' . $user->id . '/supports/';
+            $attachmentPath = 'uploads/' . $user->user_uid . '/supports/';
             if ($request->hasFile('attachment')) {
                 $file = $request->file('attachment');
                 $filename = Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();

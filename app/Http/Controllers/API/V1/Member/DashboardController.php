@@ -489,6 +489,7 @@ class DashboardController extends Controller
             return response()->json(['message' => 'Notification not found'], 404);
         }
         $notification->read_at = now();
+        $notification->view_status = 1;
         $notification->save();
         return response()->json(['message' => 'Notification marked as read successfully']);
     }

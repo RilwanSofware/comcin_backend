@@ -646,14 +646,20 @@ class DashboardController extends Controller
     public function notifications($userId)
     {
         try {
+            // Fetch unread + read notifications
             $notifications = Notification::where('user_id', $userId)
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // Mark notifications as read
+            // Mark unread as read
             Notification::where('user_id', $userId)
-                ->where('is_read', false)
-                ->update(['is_read' => true]);
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+
+            // Refresh the data so frontend sees updated values
+            $notifications = Notification::where('user_id', $userId)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             return response()->json(['notifications' => $notifications], 200);
         } catch (\Exception $e) {
