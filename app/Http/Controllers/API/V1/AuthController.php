@@ -603,7 +603,7 @@ class AuthController extends Controller
             'description' => 'Annual Registration Due',
             'type'        => 'due',
             'amount'      => $amount,
-            'status'      => 'unpaid',
+            'status'      => 'pending',
             'due_date'    => now(),
             'created_by'  => $user->id,
         ]);
@@ -639,8 +639,8 @@ class AuthController extends Controller
             $user->id,
             'Payment Recorded',
             'Your manual payment has been recorded successfully.',
-            'success',
-            'payment',
+            'info',
+            'transaction',
             1
         );
 
@@ -649,7 +649,7 @@ class AuthController extends Controller
             'Payment Recorded',
             'A manual payment has been recorded for member: ' . $user->name,
             'info',
-            'payment',
+            'transaction',
             $user->id
         );
 
