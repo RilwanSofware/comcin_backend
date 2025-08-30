@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Charges;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class DashboardController extends Controller
      *   path="/api/v1/member/dashboard",
      *  summary="Get Member Dashboard",
      *  description="Fetches the member's dashboard data including user and institution information.",
-     *  tags={"Member  - Dashboard"},
+     *  tags={"Member - Dashboard"},
      *  security={{"bearerAuth":{}}},
      *  @OA\Response(
      *     response=200,
@@ -99,7 +100,7 @@ class DashboardController extends Controller
      *   path="/api/v1/member/institution",
      *  summary="Get Member Institution",
      *  description="Fetches the institution information of the authenticated member.",
-     *  tags={"Member  - Dashboard"},
+     *  tags={"Member - Dashboard"},
      *  security={{"bearerAuth":{}}},
      *  @OA\Response(
      *     response=200,
@@ -129,13 +130,13 @@ class DashboardController extends Controller
             return response()->json(['message' => 'Institution not found'], 404);
         }
 
-        return response()->json($institution);
+        return response()->json($user);
     }
 
     /**
      * @OA\Post(
      *     path="/api/v1/member/edit-institution",
-     *     tags={"Member  - Dashboard"},
+     *     tags={"Member - Update"},
      *     summary="Edit institution details",
      *     description="Allows an authenticated user to edit and update their institution details along with uploading required files.",
      *     security={{"bearerAuth": {}}},
@@ -310,13 +311,178 @@ class DashboardController extends Controller
         }
     }
 
+    //edit logo n banner only
+    /**
+     * @OA\Post(
+     *    path="/api/v1/member/edit-institution/logo-banner",
+     * summary="Update Institution Logo and Banner",
+     * description="Allows an authenticated user to update their institution's logo and banner images.",
+     * tags={"Member - Update"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     *    required=true,
+     *   @OA\MediaType(
+     *    mediaType="multipart/form-data",
+     *   @OA\Schema(
+     *    type="object",
+     *    @OA\Property(property="institution_logo", type="string", format="binary", description="Institution logo image file (JPEG or PNG)"),
+     *   @OA\Property(property="institution_banner", type="string", format="binary", description="Institution banner image file (JPEG or PNG)")
+     *   )
+     *  )
+     * ),
+     * @OA\Response(
+     *   response=200,
+     *   description="Institution logo and banner updated successfully",
+     *   @OA\JsonContent(
+     *    type="object",
+     *   @OA\Property(property="message", type="string", example="Institution logo and banner updated successfully"),
+     *  @OA\Property(property="institution", type="object")
+     * )
+     * ),
+     * @OA\Response(
+     *  response=500,
+     * description="Error updating institution logo and banner"
+     * )
+     * )
+     * 
+     */
+    public function updateInstitutionLogoAndBanner(Request $request)
+    {
+        $user = Auth::user();
+        $userUid = $user->uid;
+        $institution = $user->institution;
+
+        try {
+            $request->validate([
+                'institution_logo' => 'nullable|file|mimes:jpeg,png',
+                'institution_banner' => 'nullable|file|mimes:jpeg,png',
+            ]);
+
+            $uploadPath = public_path('uploads/' . $userUid . '/institutions');
+            // Move uploaded files (store as paths)
+            $paths = [];
+            $fileFields = [
+                'institution_logo' => 'logo.png',
+                'institution_banner' => 'banner.png',
+            ];
+
+            foreach ($fileFields as $field => $filename) {
+                if ($request->hasFile($field)) {
+                    $request->file($field)->move($uploadPath, $filename);
+                    $paths[$field] = 'uploads/' . $userUid . '/institutions/' . $filename;
+                } else {
+                    $paths[$field] = null;
+                }
+            }
+
+            // Update institution
+            $institution->update([
+                'institution_logo' => $paths['institution_logo'],
+                'institution_banner'  => $paths['institution_banner'],
+            ]);
+
+            return response()->json([
+                'message' => 'Institution logo and banner updated successfully',
+                'institution' => $institution,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating institution logo and banner: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    //Update user profile info only
+    /**
+     * @OA\Post(
+     *    path="/api/v1/member/edit-profile",
+     * summary="Update User Profile",
+     * description="Allows an authenticated user to update their profile information including name, email, phone number, designation, and ID card.",
+     * tags={"Member - Update"},
+     * security={{"bearerAuth":{}}},
+     * @OA\RequestBody(
+     *    required=true,
+     *   @OA\MediaType(
+     *    mediaType="multipart/form-data",
+     *   @OA\Schema(
+     *    type="object",
+     *    required={"name","email"},
+     *    @OA\Property(property="name", type="string", example="John Doe"),
+     *   @OA\Property(property="email", type="string", format="email", example="member@example.com"),
+     *   @OA\Property(property="phone_number", type="string", example="+2348012345678"),
+     *   @OA\Property(property="designation", type="string", example="Manager"),
+     *   @OA\Property(property="id_card", type="string", format="binary", description="ID card image or PDF file (JPEG, PNG, or PDF)")  
+     *  )
+     * )
+     * ),
+     * @OA\Response(
+     *   response=200,
+     *   description="User profile updated successfully",
+     *   @OA\JsonContent(
+     *    type="object",
+     *   @OA\Property(property="message", type="string", example="User profile updated successfully"),
+     *  @OA\Property(property="user", type="object", ref="#/components/schemas/User")
+     * )
+     * ),
+     * @OA\Response(
+     *  response=500,
+     * description="Error updating user profile"
+     * )
+     * )
+     * 
+     */
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $user = User::find($user->id);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone_number' => 'nullable|string|max:20',
+                'designation' => 'nullable|string|max:100',
+                'id_card' => 'nullable|file|mimes:jpeg,png,pdf',
+            ]);
+
+            // Handle ID card upload if provided
+            if ($request->hasFile('id_card')) {
+                $userUid = $user->uid;
+                $uploadPath = public_path('uploads/' . $userUid . '/profile');
+                $filename = 'id_card.' . $request->file('id_card')->getClientOriginalExtension();
+                $request->file('id_card')->move($uploadPath, $filename);
+                $user->id_card = 'uploads/' . $userUid . '/profile/' . $filename;
+            }
+
+            // Update user profile
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'designation' => $request->designation,
+                'id_card' => $request->id_card,
+            ]);
+
+            return response()->json([
+                'message' => 'User profile updated successfully',
+                'user' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating user profile: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     /**
      * @OA\Get(
      *   path="/api/v1/member/financials",
      *  summary="Get Member Financials",
      *  description="Fetches the financial information of the authenticated member including pending and paid charges.",
-     *  tags={"Member  - Dashboard"},
+     *  tags={"Member - Dashboard"},
      *  security={{"bearerAuth":{}}},
      *  @OA\Response(
      *     response=200,
@@ -376,7 +542,7 @@ class DashboardController extends Controller
      *  path="/api/v1/member/certificates",
      * summary="Get Member Certificates",
      * description="Fetches the certificates associated with the authenticated member.",
-     * tags={"Member  - Dashboard"},
+     * tags={"Member - Dashboard"},
      * security={{"bearerAuth":{}}},
      * @OA\Response(
      *     response=200,
@@ -417,7 +583,7 @@ class DashboardController extends Controller
      * path="/api/v1/member/notifications",
      * summary="Get Member Notifications",
      * description="Fetches the notifications for the authenticated member.",
-     * tags={"Member  - Dashboard"},
+     * tags={"Member - Dashboard"},
      * security={{"bearerAuth":{}}},
      * @OA\Response(
      *     response=200,
@@ -451,7 +617,7 @@ class DashboardController extends Controller
      * path="/api/v1/member/notifications/mark-as-read",
      * summary="Mark Notification as Read",
      * description="Marks a notification as read for the authenticated member.",
-     * tags={"Member  - Dashboard"},
+     * tags={"Member - Dashboard"},
      * security={{"bearerAuth":{}}},
      * @OA\RequestBody(
      *     required=true,

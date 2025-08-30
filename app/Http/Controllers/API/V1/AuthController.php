@@ -19,19 +19,12 @@ use Illuminate\Support\Facades\Log;
  *     title="Comcin API",
  *     version="1.0.0",
  *     description="API documentation for the Coalition of Micro-lending and Cooperative Institutions in Nigeria (Comcin)",
- *     @OA\Contact(
- *         email="support@comcin.ng"
- *     )
+ *     @OA\Contact(email="support@comcin.com.ng")
  * ),
- *  @OA\Tag(
- *     name="Auth",
- *     description="Authentication related endpoints"
- * ),
- * @OA\Tag(
- *     name="Admin",
- *     description="Admin related endpoints"
- * ),
- * @OA\SecurityScheme(
+ *      @OA\Tag(name="Auth", description="Authentication related endpoints"),
+ * 
+ * 
+ *  @OA\SecurityScheme(
  *     securityScheme="bearerAuth",
  *     type="http",
  *     scheme="bearer",
@@ -117,7 +110,7 @@ class AuthController extends Controller
 
             if ($user) {
                 // Send OTP to user
-                $this->sendOtpToUser($user);
+                $this->sendOtpToResetPassword($user);
             } else {
                 // Optional: log the attempt for audit/security
                 Log::info("Password reset requested for non-existing email: {$request->email}");
@@ -174,7 +167,7 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email", "otp", "password", "password_confirmation"},
-     *             @OA\Property(property="email", type="string", example="admin@comcin.ng"),
+     *            @OA\Property(property="uuid", type="string", example="123e4567-e89b-12d3-a456-426614174000"),
      *             @OA\Property(property="otp", type="string", example="123456"),
      *             @OA\Property(property="password", type="string", example="newpassword"),
      *             @OA\Property(property="password_confirmation", type="string", example="newpassword")
@@ -187,12 +180,13 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email'                 => 'required|email',
+            'uuid'                 => 'required|string',
             'otp'                   => 'required|string',
             'password'              => 'required|confirmed|min:6',
         ]);
 
-        $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
+        $user = User::where('user_uid', $request->uuid)->where('otp', $request->otp)->first();
+        // $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
 
         if (!$user) {
             return response()->json(['message' => 'Invalid email or OTP'], 400);
@@ -440,7 +434,7 @@ class AuthController extends Controller
             DB::commit();
 
             // Send email notification
-            $this->sendOtpToUser($user);
+            $this->sendOtpToVerifyUser($user);
 
             return response()->json([
                 'message' => 'Institution registered successfully. Awaiting approval.',
@@ -556,7 +550,7 @@ class AuthController extends Controller
     }
 
 
-    private function sendOtpToUser($user)
+    private function sendOtpToVerifyUser($user)
     {
         // Generate 6-digit OTP
         $otp = rand(100000, 999999);
@@ -578,6 +572,32 @@ class AuthController extends Controller
         Mail::raw($emailBody, function ($message) use ($user) {
             $message->to($user->email)
                 ->subject('Your OTP Code and Verification Link');
+        });
+    }
+
+    private function sendOtpToResetPassword($user)
+    {
+        // Generate 6-digit OTP
+        $otp = rand(100000, 999999);
+
+        // Save OTP and expiry to user
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addHour(); // expires in 1 hour
+        $user->save();
+
+        // Create verification link
+        $verificationLink = "https://comcin.com.ng/reset-password/{$user->user_uid}/{$otp}";
+
+        // Send OTP via email
+        $emailBody = "You requested a password reset. Your OTP is: {$otp}\n\n"
+            . "Note: This code will expire in 1 hour.\n\n"
+            . "Click the link below to reset your password:\n"
+            . "{$verificationLink}\n\n"
+            . "If you did not request a password reset, please ignore this email.";
+
+        Mail::raw($emailBody, function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Your Password Reset OTP Code');
         });
     }
 

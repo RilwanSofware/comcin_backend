@@ -19,7 +19,13 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://localhost:5174',
+        'http://localhost:5173',
+        'https://backend.comcin.com.ng',
+        'https://comcin.com.ng',
+        'https://www.comcin.com.ng'
+    ],
 
     'allowed_origins_patterns' => [],
 

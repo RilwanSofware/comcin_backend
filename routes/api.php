@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\Admin\AdminController;
 use App\Http\Controllers\API\V1\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\API\V1\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\API\V1\Admin\PaymentMethodController as AdminPaymentMethodController;
 use App\Http\Controllers\API\V1\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\API\V1\Admin\SupportController as AdminSupportController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\API\V1\Member\PaymentController as MemberPaymentController;
 use App\Http\Controllers\API\V1\Member\SupportController as MemberSupportController;
+use App\Http\Controllers\API\V1\WebsiteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +27,8 @@ Route::prefix('v1')->group(function () {
     Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
     Route::get('verify-email/{uuid}/{otp}', [AuthController::class, 'verifyEmail']);
+
+    Route::get('homepage', [WebsiteController::class, 'homepage']);
 
 
 
@@ -74,7 +78,16 @@ Route::prefix('v1')->group(function () {
                 Route::post('{id}/publish', [AdminTestimonialController::class, 'publish']);
             });
 
-            Route::prefix('settings')->middleware(['auth', 'admin'])->group(function () {
+            //News
+            Route::group(['prefix' => 'news',], function () {
+                Route::get('/', [AdminNewsController::class, 'index']);
+                Route::post('/', [AdminNewsController::class, 'store']);
+                Route::get('{id}', [AdminNewsController::class, 'show']);
+                Route::delete('{id}', [AdminNewsController::class, 'destroy']);
+                Route::post('{id}/publish', [AdminNewsController::class, 'publish']);
+            });
+
+            Route::group(['prefix' => 'settings',], function () {
                 Route::match(['get', 'post'], '/general', [AdminSettingsController::class, 'updateGeneral']);
                 Route::match(['get', 'post'], '/security', [AdminSettingsController::class, 'updateSecurity']);
                 Route::match(['get', 'post'], '/notifications', [AdminSettingsController::class, 'updateNotifications']);
@@ -88,7 +101,11 @@ Route::prefix('v1')->group(function () {
 
             Route::get('dashboard', [MemberDashboardController::class, 'index']);
             Route::get('institution', [MemberDashboardController::class, 'institution']);
+
             Route::post('edit-institution', [MemberDashboardController::class, 'editInstitution']);
+            Route::post('edit-institution/logo-banner', [MemberDashboardController::class, 'updateInstitutionLogoAndBanner']);
+            Route::post('edit-profile', [MemberDashboardController::class, 'editProfile']);
+            
             Route::get('financials', [MemberDashboardController::class, 'financials']);
             Route::get('certificates', [MemberDashboardController::class, 'certificates']);
 
