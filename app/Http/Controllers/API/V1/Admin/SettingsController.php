@@ -230,7 +230,7 @@ class SettingsController extends Controller
      * )
      */
 
-    public function updateNotification(Request $request)
+    public function updateNotifications(Request $request)
     {
         if ($request->isMethod('get')) {
             $settings = WebsiteContent::where('section', 'notification')->pluck('value', 'key');

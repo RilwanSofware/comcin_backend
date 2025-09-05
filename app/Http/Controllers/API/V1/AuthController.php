@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Charges;
 use App\Models\Institution;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -17,19 +19,12 @@ use Illuminate\Support\Facades\Log;
  *     title="Comcin API",
  *     version="1.0.0",
  *     description="API documentation for the Coalition of Micro-lending and Cooperative Institutions in Nigeria (Comcin)",
- *     @OA\Contact(
- *         email="support@comcin.ng"
- *     )
+ *     @OA\Contact(email="support@comcin.com.ng")
  * ),
- *  @OA\Tag(
- *     name="Auth",
- *     description="Authentication related endpoints"
- * ),
-    * @OA\Tag(
-    *     name="Admin",
-    *     description="Admin related endpoints"
- * ),
- * @OA\SecurityScheme(
+ *      @OA\Tag(name="Auth", description="Authentication related endpoints"),
+ * 
+ * 
+ *  @OA\SecurityScheme(
  *     securityScheme="bearerAuth",
  *     type="http",
  *     scheme="bearer",
@@ -115,7 +110,7 @@ class AuthController extends Controller
 
             if ($user) {
                 // Send OTP to user
-                $this->sendOtpToUser($user);
+                $this->sendOtpToResetPassword($user);
             } else {
                 // Optional: log the attempt for audit/security
                 Log::info("Password reset requested for non-existing email: {$request->email}");
@@ -172,7 +167,7 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email", "otp", "password", "password_confirmation"},
-     *             @OA\Property(property="email", type="string", example="admin@comcin.ng"),
+     *            @OA\Property(property="uuid", type="string", example="123e4567-e89b-12d3-a456-426614174000"),
      *             @OA\Property(property="otp", type="string", example="123456"),
      *             @OA\Property(property="password", type="string", example="newpassword"),
      *             @OA\Property(property="password_confirmation", type="string", example="newpassword")
@@ -185,12 +180,13 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email'                 => 'required|email',
+            'uuid'                 => 'required|string',
             'otp'                   => 'required|string',
             'password'              => 'required|confirmed|min:6',
         ]);
 
-        $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
+        $user = User::where('user_uid', $request->uuid)->where('otp', $request->otp)->first();
+        // $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
 
         if (!$user) {
             return response()->json(['message' => 'Invalid email or OTP'], 400);
@@ -221,7 +217,7 @@ class AuthController extends Controller
      *                     "institution_name", "institution_type", "date_of_establishment",
      *                     "registration_number", "regulatory_body", "operating_state",
      *                     "designation", "official_email", "phone_number",
-     *                     "id_card", "certificate_of_registration", "operational_license", "constitution",
+     *                     "id_card", "certificate_of_registration", "operational_license", "payment_receipt",
      *                     "membership_agreement", "terms_agreement"
      *                 },
      *                 @OA\Property(property="full_name", type="string", example="John Doe"),
@@ -246,6 +242,7 @@ class AuthController extends Controller
      *                 @OA\Property(property="phone_number", type="string", example="+2348012345678"),
      *
      *                 @OA\Property(property="id_card", type="string", format="binary"),
+     *                 @OA\Property(property="institution_logo", type="string", format="binary"),
      *                 @OA\Property(property="certificate_of_registration", type="string", format="binary"),
      *                 @OA\Property(property="operational_license", type="string", format="binary"),
      *                 @OA\Property(property="constitution", type="string", format="binary"),
@@ -254,6 +251,7 @@ class AuthController extends Controller
      *                 @OA\Property(property="board_resolution", type="string", format="binary"),
      *                 @OA\Property(property="passport_photograph", type="string", format="binary"),
      *                 @OA\Property(property="other_supporting_document", type="string", format="binary"),
+     *                 @OA\Property(property="payment_receipt", type="string", format="binary", description="Optional payment receipt upload"),
      *
      *                 @OA\Property(property="membership_agreement", type="boolean", example=true),
      *                 @OA\Property(property="terms_agreement", type="boolean", example=true)
@@ -315,9 +313,11 @@ class AuthController extends Controller
                 'id_card' => 'required|file|mimes:jpeg,png,pdf',
 
                 // Files
+                'institution_logo' => 'nullable|file|mimes:jpeg,png',
+
                 'certificate_of_registration' => 'required|file|mimes:pdf,jpeg,png',
                 'operational_license' => 'required|file|mimes:pdf,jpeg,png',
-                'constitution' => 'required|file|mimes:pdf,jpeg,png',
+                'constitution' => 'nullable|file|mimes:pdf,jpeg,png',
                 'latest_annual_report' => 'nullable|file|mimes:pdf,jpeg,png',
                 'letter_of_intent' => 'nullable|file|mimes:pdf,jpeg,png',
                 'board_resolution' => 'nullable|file|mimes:pdf,jpeg,png',
@@ -327,16 +327,23 @@ class AuthController extends Controller
                 // Agreements
                 'membership_agreement' => 'required|in:true,false',
                 'terms_agreement' => 'required|in:true,false',
+
+                // Optional payment receipt
+                'payment_receipt' => 'nullable|file|mimes:pdf,jpeg,png',
             ]);
 
             $userUid = (string) Str::uuid();
-            $uploadPath = public_path('uploads/' . $userUid. '/institutions');
+            $uploadPath = public_path('uploads/' . $userUid . '/institutions');
 
             //if true or false retun 0 or 1
-            $request->merge([
-                'membership_agreement' => $request->membership_agreement ? 1 : 0,
-                'terms_agreement' => $request->terms_agreement ? 1 : 0
-            ]);
+            // $request->merge([
+            //     'membership_agreement' => $request->membership_agreement ? 1 : 0,
+            //     'terms_agreement' => $request->terms_agreement ? 1 : 0
+            // ]);
+
+            // Normalize agreements to boolean 0/1
+            $membershipAgreement = $request->membership_agreement === 'true' ? 1 : 0;
+            $termsAgreement = $request->terms_agreement === 'true' ? 1 : 0;
 
             // Create folder if not exists
             if (!file_exists($uploadPath)) {
@@ -346,6 +353,7 @@ class AuthController extends Controller
             // Move uploaded files (store as paths)
             $paths = [];
             $fileFields = [
+                'institution_logo' => 'logo.png',
                 'certificate_of_registration' => 'certificate.pdf',
                 'operational_license' => 'license.pdf',
                 'constitution' => 'constitution.pdf',
@@ -361,7 +369,6 @@ class AuthController extends Controller
                 if ($request->hasFile($field)) {
                     $request->file($field)->move($uploadPath, $filename);
                     $paths[$field] = 'uploads/' . $userUid . '/institutions/' . $filename;
-                   
                 } else {
                     $paths[$field] = null;
                 }
@@ -385,7 +392,7 @@ class AuthController extends Controller
             // Create institution
             Institution::create([
                 'user_id' => $user->id,
-                'institution_uid' => (string) Str::uuid(),
+                'institution_uid' => $userUid,
                 'institution_name' => $request->institution_name,
                 'institution_type' => $request->institution_type,
                 'category_type' => $request->category_type,
@@ -393,7 +400,7 @@ class AuthController extends Controller
                 'registration_number' => $request->registration_number,
                 'regulatory_body' => $request->regulatory_body,
                 'operating_state' => $request->operating_state,
-                'institution_logo' => null, // if added separately
+                'institution_logo' => $paths['institution_logo'],
                 'certificate_of_registration' => $paths['certificate_of_registration'],
                 'operational_license' => $paths['operational_license'],
                 'constitution' => $paths['constitution'],
@@ -402,8 +409,8 @@ class AuthController extends Controller
                 'board_resolution' => $paths['board_resolution'],
                 'passport_photograph' => $paths['passport_photograph'],
                 'other_supporting_document' => $paths['other_supporting_document'],
-                'membership_agreement' => $request->membership_agreement,
-                'terms_agreement' => $request->terms_agreement,
+                'membership_agreement' => $membershipAgreement,
+                'terms_agreement' => $termsAgreement,
                 'head_office' => $request->head_office,
                 'business_operation_address' => $request->business_operation_address,
                 'phone_number' => $request->phone_number,
@@ -412,14 +419,28 @@ class AuthController extends Controller
                 'is_approved' => false,
             ]);
 
+            // Create initial charges if payment receipt provided
+            $charge = $transaction = null;
+            if ($request->hasFile('payment_receipt')) {
+                [$charge, $transaction] = $this->createCharges(
+                    $user,
+                    $request->category_type,
+                    null,
+                    $request->file('payment_receipt')
+                );
+            }
+
+
             DB::commit();
 
             // Send email notification
-            $this->sendOtpToUser($user);
+            $this->sendOtpToVerifyUser($user);
 
             return response()->json([
                 'message' => 'Institution registered successfully. Awaiting approval.',
-                'user' => $user
+                'user' => $user,
+                'charges' => $charge,
+                'transaction' => $transaction
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -529,7 +550,7 @@ class AuthController extends Controller
     }
 
 
-    private function sendOtpToUser($user)
+    private function sendOtpToVerifyUser($user)
     {
         // Generate 6-digit OTP
         $otp = rand(100000, 999999);
@@ -552,5 +573,106 @@ class AuthController extends Controller
             $message->to($user->email)
                 ->subject('Your OTP Code and Verification Link');
         });
+    }
+
+    private function sendOtpToResetPassword($user)
+    {
+        // Generate 6-digit OTP
+        $otp = rand(100000, 999999);
+
+        // Save OTP and expiry to user
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addHour(); // expires in 1 hour
+        $user->save();
+
+        // Create verification link
+        $verificationLink = "https://comcin.com.ng/reset-password/{$user->user_uid}/{$otp}";
+
+        // Send OTP via email
+        $emailBody = "You requested a password reset. Your OTP is: {$otp}\n\n"
+            . "Note: This code will expire in 1 hour.\n\n"
+            . "Click the link below to reset your password:\n"
+            . "{$verificationLink}\n\n"
+            . "If you did not request a password reset, please ignore this email.";
+
+        Mail::raw($emailBody, function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Your Password Reset OTP Code');
+        });
+    }
+
+    private function createCharges($user, $category_type, $amount, $receiptFile = null)
+    {
+        // Determine charge amount if not passed
+        if (!$amount) {
+            if ($category_type === 'unit') {
+                $amount = 20000;
+            } elseif ($category_type === 'state') {
+                $amount = 50000;
+            } elseif ($category_type === 'federal') {
+                $amount = 100000;
+            } else {
+                $amount = 0;
+            }
+        }
+
+        // Create charge
+        $charge = Charges::create([
+            'member_id'   => $user->id,
+            'title'       => 'Annual Dues',
+            'description' => 'Annual Registration Due',
+            'type'        => 'due',
+            'amount'      => $amount,
+            'status'      => 'pending',
+            'due_date'    => now(),
+            'created_by'  => $user->id,
+        ]);
+
+        // Handle receipt upload
+        $receiptPath = null;
+        if ($receiptFile) {
+            $receiptDir = 'uploads/' . $user->user_uid . '/receipts/';
+            if (!file_exists(public_path($receiptDir))) {
+                mkdir(public_path($receiptDir), 0755, true);
+            }
+            $filename = Str::random(10) . '_' . time() . '.' . $receiptFile->getClientOriginalExtension();
+            $receiptFile->move(public_path($receiptDir), $filename);
+            $receiptPath = $receiptDir . $filename;
+        }
+
+        // Create transaction
+        $transaction = Transaction::create([
+            'member_id'    => $user->id,
+            'charge_id'    => $charge->id,
+            'reference'    => strtoupper(Str::random(12)),
+            'amount'       => $amount,
+            'status'       => 'pending',
+            'method'       => 'bank_transfer',
+            'narration'    => null,
+            'paid_at'      => now(),
+            'recorded_by'  => $user->id,
+            'receipt_file' => $receiptPath,
+        ]);
+
+        // Notifications
+        store_notification(
+            $user->id,
+            'Payment Recorded',
+            'Your manual payment has been recorded successfully.',
+            'info',
+            'transaction',
+            1
+        );
+
+        store_notification(
+            1,
+            'Payment Recorded',
+            'A manual payment has been recorded for member: ' . $user->name,
+            'info',
+            'transaction',
+            $user->id
+        );
+
+        return [$charge, $transaction];
     }
 }

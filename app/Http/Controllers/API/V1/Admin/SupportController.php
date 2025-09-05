@@ -256,7 +256,7 @@ class SupportController extends Controller
                 'Support Ticket Status Update',
                 $message,
                 'info',
-                'support_ticket',
+                'support',
                 Auth::id()
             );
 
@@ -266,7 +266,7 @@ class SupportController extends Controller
                 'Support Ticket Status Update',
                 $adminMessage,
                 'info',
-                'support_ticket',
+                'support',
                 Auth::id()
             );
 

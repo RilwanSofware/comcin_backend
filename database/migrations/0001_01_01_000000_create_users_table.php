@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'member'])->default('member');
             $table->string('phone_number')->nullable();
             $table->string('designation')->nullable();
+            $table->string('id_card')->nullable();
             $table->string('otp')->nullable();
             $table->timestamp('otp_expires_at')->nullable();
             $table->boolean('is_active')->default(true);

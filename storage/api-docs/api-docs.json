@@ -1271,7 +1271,7 @@
                 ],
                 "summary": "Get Notification Preferences",
                 "description": "Retrieve notification preferences such as new member alerts, payment confirmations, and compliance reminders.",
-                "operationId": "d7f8a7d570e2f6eeecbfc49729a6c358",
+                "operationId": "7dae5fadae68ec5836d069c5f0384c97",
                 "responses": {
                     "200": {
                         "description": "Notification preferences retrieved successfully",
@@ -1310,7 +1310,7 @@
                 ],
                 "summary": "Update Notification Preferences",
                 "description": "Update preferences for receiving system notifications.",
-                "operationId": "916b91844a65965577e84e8883360f7b",
+                "operationId": "5da8e4f04c5e03d173951736f15561a2",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2796,7 +2796,7 @@
                                     "id_card",
                                     "certificate_of_registration",
                                     "operational_license",
-                                    "constitution",
+                                    "payment_receipt",
                                     "membership_agreement",
                                     "terms_agreement"
                                 ],
@@ -2893,6 +2893,10 @@
                                         "type": "string",
                                         "format": "binary"
                                     },
+                                    "institution_logo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
                                     "certificate_of_registration": {
                                         "type": "string",
                                         "format": "binary"
@@ -2922,6 +2926,11 @@
                                         "format": "binary"
                                     },
                                     "other_supporting_document": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "payment_receipt": {
+                                        "description": "Optional payment receipt upload",
                                         "type": "string",
                                         "format": "binary"
                                     },
@@ -3099,7 +3108,7 @@
         "/api/v1/member/dashboard": {
             "get": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Dashboard"
                 ],
                 "summary": "Get Member Dashboard",
                 "description": "Fetches the member's dashboard data including user and institution information.",
@@ -3163,7 +3172,7 @@
         "/api/v1/member/institution": {
             "get": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Dashboard"
                 ],
                 "summary": "Get Member Institution",
                 "description": "Fetches the institution information of the authenticated member.",
@@ -3199,7 +3208,7 @@
         "/api/v1/member/edit-institution": {
             "post": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Update"
                 ],
                 "summary": "Edit institution details",
                 "description": "Allows an authenticated user to edit and update their institution details along with uploading required files.",
@@ -3377,10 +3386,148 @@
                 ]
             }
         },
+        "/api/v1/member/edit-institution/logo-banner": {
+            "post": {
+                "tags": [
+                    "Member - Update"
+                ],
+                "summary": "Update Institution Logo and Banner",
+                "description": "Allows an authenticated user to update their institution's logo and banner images.",
+                "operationId": "775c5a74cd4dfaec07e44dc302da8e0b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "institution_logo": {
+                                        "description": "Institution logo image file (JPEG or PNG)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "institution_banner": {
+                                        "description": "Institution banner image file (JPEG or PNG)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Institution logo and banner updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Institution logo and banner updated successfully"
+                                        },
+                                        "institution": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error updating institution logo and banner"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/member/edit-profile": {
+            "post": {
+                "tags": [
+                    "Member - Update"
+                ],
+                "summary": "Update User Profile",
+                "description": "Allows an authenticated user to update their profile information including name, email, phone number, designation, and ID card.",
+                "operationId": "695c0315b3f36f0e97b68e07c29a0670",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "member@example.com"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "+2348012345678"
+                                    },
+                                    "designation": {
+                                        "type": "string",
+                                        "example": "Manager"
+                                    },
+                                    "id_card": {
+                                        "description": "ID card image or PDF file (JPEG, PNG, or PDF)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User profile updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User profile updated successfully"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error updating user profile"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/member/financials": {
             "get": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Dashboard"
                 ],
                 "summary": "Get Member Financials",
                 "description": "Fetches the financial information of the authenticated member including pending and paid charges.",
@@ -3440,7 +3587,7 @@
         "/api/v1/member/certificates": {
             "get": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Dashboard"
                 ],
                 "summary": "Get Member Certificates",
                 "description": "Fetches the certificates associated with the authenticated member.",
@@ -3479,7 +3626,7 @@
         "/api/v1/member/notifications": {
             "get": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Dashboard"
                 ],
                 "summary": "Get Member Notifications",
                 "description": "Fetches the notifications for the authenticated member.",
@@ -3515,7 +3662,7 @@
         "/api/v1/member/notifications/mark-as-read": {
             "post": {
                 "tags": [
-                    "Member  - Dashboard"
+                    "Member - Dashboard"
                 ],
                 "summary": "Mark Notification as Read",
                 "description": "Marks a notification as read for the authenticated member.",
@@ -4795,8 +4942,12 @@
             "description": "Admin - Website Content"
         },
         {
-            "name": "Member  - Dashboard",
-            "description": "Member  - Dashboard"
+            "name": "Member - Dashboard",
+            "description": "Member - Dashboard"
+        },
+        {
+            "name": "Member - Update",
+            "description": "Member - Update"
         },
         {
             "name": "Member - Payments",
